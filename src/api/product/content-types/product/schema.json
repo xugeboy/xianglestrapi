@@ -1,0 +1,119 @@
+{
+  "kind": "collectionType",
+  "collectionName": "products",
+  "info": {
+    "singularName": "product",
+    "pluralName": "products",
+    "displayName": "Product",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "see_more": {
+      "type": "richtext"
+    },
+    "about": {
+      "type": "richtext"
+    },
+    "assembly_break_strength": {
+      "type": "string"
+    },
+    "length": {
+      "type": "string"
+    },
+    "fixed_end_length": {
+      "type": "string"
+    },
+    "end_fitting": {
+      "type": "string"
+    },
+    "width": {
+      "type": "string"
+    },
+    "working_load_limit": {
+      "type": "string"
+    },
+    "material": {
+      "type": "string"
+    },
+    "webbing_break_strength": {
+      "type": "string"
+    },
+    "grade": {
+      "type": "string"
+    },
+    "ratchet_handle": {
+      "type": "string"
+    },
+    "finish": {
+      "type": "string"
+    },
+    "product_weight": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    },
+    "category": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product-category.product-category",
+      "inversedBy": "products"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name"
+    },
+    "gallery": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "youtube_url": {
+      "type": "string"
+    },
+    "related_blogs": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::blog.blog",
+      "inversedBy": "products"
+    },
+    "related_products": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::product.product",
+      "inversedBy": "products"
+    },
+    "products": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::product.product",
+      "mappedBy": "related_products"
+    },
+    "featured_image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "youtube_title": {
+      "type": "string"
+    }
+  }
+}
