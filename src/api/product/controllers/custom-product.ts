@@ -41,7 +41,6 @@ export default factories.createCoreController(
           "assembly_break_strength",
           "webbing_break_strength",
           "end_fitting",
-          "fixed_end_length",
           "ratchet_handle",
         ];
 
