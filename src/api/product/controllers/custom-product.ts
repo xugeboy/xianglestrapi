@@ -23,9 +23,11 @@ export default factories.createCoreController(
         // 基础查询条件
         const baseQuery: any = {};
 
-        // 如果提供了分类ID，添加到查询条件
+        // 如果提供了分类Slug，添加到查询条件
         if (categorySlug) {
-          baseQuery.category.slug = categorySlug;
+          baseQuery.category = {
+            slug: categorySlug,
+          };
         }
 
         // 定义要分组的属性字段
@@ -40,14 +42,14 @@ export default factories.createCoreController(
           "webbing_break_strength",
           "end_fitting",
           "fixed_end_length",
-          "ratchet_handle"
+          "ratchet_handle",
         ];
 
         // 查询所有符合条件的产品
         const products = await strapi.entityService.findMany(
           "api::product.product",
           {
-            filters: baseQuery
+            filters: baseQuery,
           }
         );
 
@@ -99,7 +101,9 @@ export default factories.createCoreController(
 
         // 添加分类筛选条件
         if (categorySlug) {
-          filters.category.slug = categorySlug;
+          filters.category = {
+            slug: categorySlug,
+          };
         }
 
         // 添加属性筛选条件
@@ -154,61 +158,64 @@ export default factories.createCoreController(
 
     /**
      * 根据产品slug获取完整产品信息
-     * 
+     *
      * @param {Context} ctx - Koa context
      */
     async getBySlug(ctx: Context) {
       try {
         const { slug } = ctx.params;
         if (!slug) {
-          return ctx.badRequest('Slug is required');
+          return ctx.badRequest("Slug is required");
         }
 
         // 设置默认状态为已发布
         ctx.query.status = ctx.query.status || "published";
 
         // 查询产品
-        const products = await strapi.entityService.findMany('api::product.product', {
-          filters: {
-            slug: slug,
-          },
-          fields: [
-            "id",
-            "name",
-            "slug",
-            "code",
-            "about",
-            "see_more",
-            "youtube_url",
-            "assembly_break_strength",
-            "length",
-            "fixed_end_length",
-            "end_fitting",
-            "width",
-            "working_load_limit",
-            "material",
-            "webbing_break_strength",
-            "grade",
-            "ratchet_handle",
-            "finish",
-            "product_weight",
-          ],
-          populate: {
-            featured_image: { fields: ["url"] },
-            gallery: { fields: ["url"] },
-            category: { fields: ["id", "name", "slug"] },
-            related_products: {
-              fields: ["id", "name", "slug", "code"],
-              populate: {
-                featured_image: { fields: ["url"] },
-              },
+        const products = await strapi.entityService.findMany(
+          "api::product.product",
+          {
+            filters: {
+              slug: slug,
             },
-            related_blogs: { fields: ["id", "title", "slug"] },
-          },
-        });
+            fields: [
+              "id",
+              "name",
+              "slug",
+              "code",
+              "about",
+              "see_more",
+              "youtube_url",
+              "assembly_break_strength",
+              "length",
+              "fixed_end_length",
+              "end_fitting",
+              "width",
+              "working_load_limit",
+              "material",
+              "webbing_break_strength",
+              "grade",
+              "ratchet_handle",
+              "finish",
+              "product_weight",
+            ],
+            populate: {
+              featured_image: { fields: ["url"] },
+              gallery: { fields: ["url"] },
+              category: { fields: ["id", "name", "slug"] },
+              related_products: {
+                fields: ["id", "name", "slug", "code"],
+                populate: {
+                  featured_image: { fields: ["url"] },
+                },
+              },
+              related_blogs: { fields: ["id", "title", "slug"] },
+            },
+          }
+        );
 
         if (!products || products.length === 0) {
-          return ctx.notFound('Product not found');
+          return ctx.notFound("Product not found");
         }
 
         return products[0];
@@ -219,14 +226,14 @@ export default factories.createCoreController(
 
     /**
      * 根据分类slug获取产品列表
-     * 
+     *
      * @param {Context} ctx - Koa context
      */
     async getByCategorySlug(ctx: Context) {
       try {
         const { slug } = ctx.params;
         if (!slug) {
-          return ctx.badRequest('Category slug is required');
+          return ctx.badRequest("Category slug is required");
         }
 
         const { page = 1, pageSize = 12 } = ctx.query;
@@ -239,22 +246,25 @@ export default factories.createCoreController(
         const limit = Number(pageSize) || 12;
 
         // 查询产品
-        const products = await strapi.entityService.findMany('api::product.product', {
-          filters: {
-            category: {
-              slug: slug,
+        const products = await strapi.entityService.findMany(
+          "api::product.product",
+          {
+            filters: {
+              category: {
+                slug: slug,
+              },
             },
-          },
-          fields: ["id", "name", "slug", "code"],
-          populate: {
-            featured_image: { fields: ["url"] },
-          },
-          start,
-          limit,
-        });
+            fields: ["id", "name", "slug", "code"],
+            populate: {
+              featured_image: { fields: ["url"] },
+            },
+            start,
+            limit,
+          }
+        );
 
         // 获取符合条件的总数
-        const total = await strapi.entityService.count('api::product.product', {
+        const total = await strapi.entityService.count("api::product.product", {
           filters: {
             category: {
               slug: slug,
@@ -280,25 +290,28 @@ export default factories.createCoreController(
 
     /**
      * 获取特色产品列表
-     * 
+     *
      * @param {Context} ctx - Koa context
      */
     async getFeatured(ctx: Context) {
       try {
         const { limit = 8 } = ctx.query;
-        
+
         // 设置默认状态为已发布
         ctx.query.status = ctx.query.status || "published";
 
         // 查询产品
-        const products = await strapi.entityService.findMany('api::product.product', {
-          sort: { createdAt: 'desc' }, // 默认按创建日期降序排列
-          fields: ["id", "name", "slug", "code"],
-          populate: {
-            featured_image: { fields: ["url"] },
-          },
-          limit: Number(limit) || 8,
-        });
+        const products = await strapi.entityService.findMany(
+          "api::product.product",
+          {
+            sort: { createdAt: "desc" }, // 默认按创建日期降序排列
+            fields: ["id", "name", "slug", "code"],
+            populate: {
+              featured_image: { fields: ["url"] },
+            },
+            limit: Number(limit) || 8,
+          }
+        );
 
         return {
           data: products,
@@ -310,33 +323,36 @@ export default factories.createCoreController(
 
     /**
      * 搜索产品
-     * 
+     *
      * @param {Context} ctx - Koa context
      */
     async search(ctx: Context) {
       try {
         const { query } = ctx.query;
-        if (!query || typeof query !== 'string') {
-          return ctx.badRequest('Search query is required');
+        if (!query || typeof query !== "string") {
+          return ctx.badRequest("Search query is required");
         }
 
         // 设置默认状态为已发布
         ctx.query.status = ctx.query.status || "published";
 
         // 查询产品
-        const products = await strapi.entityService.findMany('api::product.product', {
-          filters: {
-            name: {
-              $containsi: query,
+        const products = await strapi.entityService.findMany(
+          "api::product.product",
+          {
+            filters: {
+              name: {
+                $containsi: query,
+              },
             },
-          },
-          fields: ["id", "name", "slug", "code"],
-          populate: {
-            featured_image: { fields: ["url"] },
-            gallery: { fields: ["url"] },
-            category: { fields: ["id", "name", "slug"] },
-          },
-        });
+            fields: ["id", "name", "slug", "code"],
+            populate: {
+              featured_image: { fields: ["url"] },
+              gallery: { fields: ["url"] },
+              category: { fields: ["id", "name", "slug"] },
+            },
+          }
+        );
 
         return {
           data: products,
