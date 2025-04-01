@@ -15,7 +15,7 @@ export default factories.createCoreController(
      */
     async getAttributeFilters(ctx: Context) {
       try {
-        const { categoryId } = ctx.query;
+        const { categorySlug } = ctx.query;
 
         // 设置默认状态为已发布
         ctx.query.status = ctx.query.status || "published";
@@ -24,8 +24,8 @@ export default factories.createCoreController(
         const baseQuery: any = {};
 
         // 如果提供了分类ID，添加到查询条件
-        if (categoryId) {
-          baseQuery.category = categoryId;
+        if (categorySlug) {
+          baseQuery.category.slug = categorySlug;
         }
 
         // 定义要分组的属性字段
@@ -40,15 +40,14 @@ export default factories.createCoreController(
           "webbing_break_strength",
           "end_fitting",
           "fixed_end_length",
-          "ratchet_handle",
-          "product_weight",
+          "ratchet_handle"
         ];
 
         // 查询所有符合条件的产品
         const products = await strapi.entityService.findMany(
           "api::product.product",
           {
-            filters: baseQuery,
+            filters: baseQuery
           }
         );
 
@@ -89,7 +88,7 @@ export default factories.createCoreController(
         ctx.query.status = ctx.query.status || "published";
 
         const {
-          categoryId,
+          categorySlug,
           page = 1,
           pageSize = 10,
           ...attributeFilters
@@ -99,8 +98,8 @@ export default factories.createCoreController(
         const filters: any = {};
 
         // 添加分类筛选条件
-        if (categoryId) {
-          filters.category = categoryId;
+        if (categorySlug) {
+          filters.category.slug = categorySlug;
         }
 
         // 添加属性筛选条件
@@ -125,7 +124,7 @@ export default factories.createCoreController(
           "api::product.product",
           {
             filters,
-            populate: ["category", "featured_image", "gallery"],
+            populate: ["category", "featured_image"],
             sort: { createdAt: "desc" },
             start,
             limit,
@@ -147,6 +146,200 @@ export default factories.createCoreController(
               total,
             },
           },
+        };
+      } catch (error) {
+        ctx.throw(500, error);
+      }
+    },
+
+    /**
+     * 根据产品slug获取完整产品信息
+     * 
+     * @param {Context} ctx - Koa context
+     */
+    async getBySlug(ctx: Context) {
+      try {
+        const { slug } = ctx.params;
+        if (!slug) {
+          return ctx.badRequest('Slug is required');
+        }
+
+        // 设置默认状态为已发布
+        ctx.query.status = ctx.query.status || "published";
+
+        // 查询产品
+        const products = await strapi.entityService.findMany('api::product.product', {
+          filters: {
+            slug: slug,
+          },
+          fields: [
+            "id",
+            "name",
+            "slug",
+            "code",
+            "about",
+            "see_more",
+            "youtube_url",
+            "assembly_break_strength",
+            "length",
+            "fixed_end_length",
+            "end_fitting",
+            "width",
+            "working_load_limit",
+            "material",
+            "webbing_break_strength",
+            "grade",
+            "ratchet_handle",
+            "finish",
+            "product_weight",
+          ],
+          populate: {
+            featured_image: { fields: ["url"] },
+            gallery: { fields: ["url"] },
+            category: { fields: ["id", "name", "slug"] },
+            related_products: {
+              fields: ["id", "name", "slug", "code"],
+              populate: {
+                featured_image: { fields: ["url"] },
+              },
+            },
+            related_blogs: { fields: ["id", "title", "slug"] },
+          },
+        });
+
+        if (!products || products.length === 0) {
+          return ctx.notFound('Product not found');
+        }
+
+        return products[0];
+      } catch (error) {
+        ctx.throw(500, error);
+      }
+    },
+
+    /**
+     * 根据分类slug获取产品列表
+     * 
+     * @param {Context} ctx - Koa context
+     */
+    async getByCategorySlug(ctx: Context) {
+      try {
+        const { slug } = ctx.params;
+        if (!slug) {
+          return ctx.badRequest('Category slug is required');
+        }
+
+        const { page = 1, pageSize = 12 } = ctx.query;
+
+        // 设置默认状态为已发布
+        ctx.query.status = ctx.query.status || "published";
+
+        // 分页参数
+        const start = ((Number(page) || 1) - 1) * (Number(pageSize) || 12);
+        const limit = Number(pageSize) || 12;
+
+        // 查询产品
+        const products = await strapi.entityService.findMany('api::product.product', {
+          filters: {
+            category: {
+              slug: slug,
+            },
+          },
+          fields: ["id", "name", "slug", "code"],
+          populate: {
+            featured_image: { fields: ["url"] },
+          },
+          start,
+          limit,
+        });
+
+        // 获取符合条件的总数
+        const total = await strapi.entityService.count('api::product.product', {
+          filters: {
+            category: {
+              slug: slug,
+            },
+          },
+        });
+
+        return {
+          data: products,
+          meta: {
+            pagination: {
+              page: Number(page) || 1,
+              pageSize: limit,
+              pageCount: Math.ceil(total / limit),
+              total,
+            },
+          },
+        };
+      } catch (error) {
+        ctx.throw(500, error);
+      }
+    },
+
+    /**
+     * 获取特色产品列表
+     * 
+     * @param {Context} ctx - Koa context
+     */
+    async getFeatured(ctx: Context) {
+      try {
+        const { limit = 8 } = ctx.query;
+        
+        // 设置默认状态为已发布
+        ctx.query.status = ctx.query.status || "published";
+
+        // 查询产品
+        const products = await strapi.entityService.findMany('api::product.product', {
+          sort: { createdAt: 'desc' }, // 默认按创建日期降序排列
+          fields: ["id", "name", "slug", "code"],
+          populate: {
+            featured_image: { fields: ["url"] },
+          },
+          limit: Number(limit) || 8,
+        });
+
+        return {
+          data: products,
+        };
+      } catch (error) {
+        ctx.throw(500, error);
+      }
+    },
+
+    /**
+     * 搜索产品
+     * 
+     * @param {Context} ctx - Koa context
+     */
+    async search(ctx: Context) {
+      try {
+        const { query } = ctx.query;
+        if (!query || typeof query !== 'string') {
+          return ctx.badRequest('Search query is required');
+        }
+
+        // 设置默认状态为已发布
+        ctx.query.status = ctx.query.status || "published";
+
+        // 查询产品
+        const products = await strapi.entityService.findMany('api::product.product', {
+          filters: {
+            name: {
+              $containsi: query,
+            },
+          },
+          fields: ["id", "name", "slug", "code"],
+          populate: {
+            featured_image: { fields: ["url"] },
+            gallery: { fields: ["url"] },
+            category: { fields: ["id", "name", "slug"] },
+          },
+        });
+
+        return {
+          data: products,
         };
       } catch (error) {
         ctx.throw(500, error);
