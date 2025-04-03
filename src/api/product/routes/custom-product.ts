@@ -30,14 +30,6 @@ export default {
     },
     {
       method: 'GET',
-      path: '/products/:categorySlug',
-      handler: 'custom-product.getByCategorySlug',
-      config: {
-        auth: false,
-      },
-    },
-    {
-      method: 'GET',
       path: '/products/featured',
       handler: 'custom-product.getFeatured',
       config: {

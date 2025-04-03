@@ -14,7 +14,7 @@ export default {
     },
     {
       method: 'GET',
-      path: '/product-categories/slug/:slug',
+      path: '/product-categories/:slug',
       handler: 'custom-product-category.getCategoryBySlug',
       config: {
         auth: false,

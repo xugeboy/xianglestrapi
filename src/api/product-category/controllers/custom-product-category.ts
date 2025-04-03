@@ -50,34 +50,82 @@ export default factories.createCoreController(
       try {
         const { slug } = ctx.params;
         if (!slug) {
-          return ctx.badRequest("Slug is required");
+          return ctx.badRequest("Category slug is required");
         }
+
+        const { page = 1, pageSize = 12, includeChildren = true } = ctx.query;
 
         // 设置默认状态为已发布
         ctx.query.status = ctx.query.status || "published";
 
-        const categories = await strapi.entityService.findMany(
-          "api::product-category.product-category",
-          {
-            filters: {
-              slug: {
-                $eq: slug,
+        // 分页参数
+        const start = ((Number(page) || 1) - 1) * (Number(pageSize) || 12);
+        const limit = Number(pageSize) || 12;
+
+        // 构建查询条件
+        const filters: any = {
+          category: {
+            slug: slug,
+          },
+        };
+
+        // 如果需要包含子分类的产品
+        if (includeChildren === "true" || includeChildren === true) {
+          // 获取所有子分类的ID
+          const subCategories = await strapi.entityService.findMany(
+            "api::product-category.product-category",
+            {
+              filters: {
+                parent: {
+                  slug: slug,
+                },
               },
-            },
-            fields: ["id", "name", "slug", "description"],
+              fields: ["id", "slug"],
+            }
+          );
+
+          // 如果有子分类，添加到查询条件中
+          if (subCategories && subCategories.length > 0) {
+            const subCategorySlugs = subCategories.map((cat: any) => cat.slug);
+            filters.category = {
+              slug: {
+                $in: [slug, ...subCategorySlugs],
+              },
+            };
+          }
+        }
+
+        // 查询产品
+        const products = await strapi.entityService.findMany(
+          "api::product.product",
+          {
+            filters,
+            fields: ["id", "name", "slug", "code"],
             populate: {
               featured_image: { fields: ["url"] },
-              parent: { fields: ["id", "name", "slug"] },
-              children: { fields: ["id", "name", "slug"] },
+              category: { fields: ["id", "name", "slug"] },
             },
+            start,
+            limit,
           }
         );
 
-        if (!categories || categories.length === 0) {
-          return ctx.notFound("Category not found");
-        }
+        // 获取符合条件的总数
+        const total = await strapi.entityService.count("api::product.product", {
+          filters,
+        });
 
-        return { data: categories[0] };
+        return {
+          data: products,
+          meta: {
+            pagination: {
+              page: Number(page) || 1,
+              pageSize: limit,
+              pageCount: Math.ceil(total / limit),
+              total,
+            },
+          },
+        };
       } catch (error) {
         ctx.throw(500, error);
       }
