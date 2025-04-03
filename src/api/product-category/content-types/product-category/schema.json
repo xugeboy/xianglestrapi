@@ -49,6 +49,9 @@
     "slug": {
       "type": "uid",
       "targetField": "name"
+    },
+    "sort": {
+      "type": "integer"
     }
   }
 }
