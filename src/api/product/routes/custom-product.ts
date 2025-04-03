@@ -29,9 +29,6 @@ export default {
       handler: 'custom-product.getProductBySlug',
       config: {
         auth: false,
-        params: {
-          slug: { type: 'string' },
-        },
       },
     },
     {
