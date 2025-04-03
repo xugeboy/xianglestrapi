@@ -6,7 +6,7 @@ export default {
   routes: [
     {
       method: 'GET',
-      path: '/product-categories/all',
+      path: '/getAllCategories',
       handler: 'custom-product-category.getAllCategories',
       config: {
         auth: false,
@@ -14,7 +14,7 @@ export default {
     },
     {
       method: 'GET',
-      path: '/product-categories/:slug',
+      path: '/getCategoryBySlug',
       handler: 'custom-product-category.getCategoryBySlug',
       config: {
         auth: false,

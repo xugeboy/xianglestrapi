@@ -13,7 +13,7 @@ export default factories.createCoreController(
      *
      * @param {Context} ctx - Koa context
      */
-    async getAttributeFilters(ctx: Context) {
+    async getAttributeFiltersByCategorySlug(ctx: Context) {
       try {
         const { categorySlug } = ctx.query;
 
@@ -84,83 +84,77 @@ export default factories.createCoreController(
      * @param {Context} ctx - Koa context
      */
     async filterProducts(ctx: Context) {
-      try {
-        // 设置默认状态为已发布
-        ctx.query.status = ctx.query.status || "published";
-
-        const {
-          categorySlug,
-          page = 1,
-          pageSize = 10,
-          ...attributeFilters
-        } = ctx.query;
-
-        // 构建查询条件
-        const filters: any = {};
-
-        // 添加分类筛选条件
-        if (categorySlug) {
-          filters.category = {
-            slug: categorySlug,
+        try {
+          // 获取请求体参数（POST 请求用 ctx.request.body）
+          const status = ctx.request.body.status || "published";
+          const {
+            categorySlug,
+            page = 1,
+            pageSize = 10,
+            attributeFilters = {}, // 允许空对象
+          } = ctx.request.body;
+      
+          // 构建查询条件
+          const filters: any = {
+            status: status
           };
-        }
-
-        // 添加属性筛选条件
-        Object.keys(attributeFilters).forEach((key) => {
-          // 跳过分页和status参数
-          if (
-            attributeFilters[key] &&
-            key !== "page" &&
-            key !== "pageSize" &&
-            key !== "status"
-          ) {
-            filters[key] = attributeFilters[key];
+      
+          // 添加分类筛选条件
+          if (categorySlug) {
+            filters.category = { slug: categorySlug };
           }
-        });
-
-        // 分页参数
-        const start = ((Number(page) || 1) - 1) * (Number(pageSize) || 10);
-        const limit = Number(pageSize) || 10;
-
-        // 查询产品
-        const products = await strapi.entityService.findMany(
-          "api::product.product",
-          {
+      
+          // 添加属性筛选条件
+          Object.keys(attributeFilters).forEach((key) => {
+            if (attributeFilters[key]) {
+              filters[key] = attributeFilters[key];
+            }
+          });
+      
+          // 计算分页参数
+          const start = (Number(page) - 1) * Number(pageSize);
+          const limit = Number(pageSize);
+      
+          // 查询产品
+          const products = await strapi.entityService.findMany(
+            "api::product.product",
+            { 
+              fields: ["id", "name", "slug", "code"],
+              filters,
+              populate: ["category", "featured_image"],
+              sort: { createdAt: "desc" },
+              start,
+              limit,
+            }
+          );
+      
+          // 获取符合条件的总数
+          const total = await strapi.entityService.count("api::product.product", {
             filters,
-            populate: ["category", "featured_image"],
-            sort: { createdAt: "desc" },
-            start,
-            limit,
-          }
-        );
-
-        // 获取符合条件的总数
-        const total = await strapi.entityService.count("api::product.product", {
-          filters,
-        });
-
-        return {
-          data: products,
-          meta: {
-            pagination: {
-              page: Number(page) || 1,
-              pageSize: limit,
-              pageCount: Math.ceil(total / limit),
-              total,
+          });
+      
+          return ctx.send({
+            data: products,
+            meta: {
+              pagination: {
+                page: Number(page),
+                pageSize: limit,
+                pageCount: Math.ceil(total / limit),
+                total,
+              },
             },
-          },
-        };
-      } catch (error) {
-        ctx.throw(500, error);
-      }
-    },
+          });
+        } catch (error) {
+          ctx.throw(500, "Error fetching filtered products", { error });
+        }
+      },
 
     /**
      * 根据产品slug获取完整产品信息
      *
      * @param {Context} ctx - Koa context
      */
-    async getBySlug(ctx: Context) {
+    async getProductBySlug(ctx: Context) {
       try {
         const { slug } = ctx.params;
         if (!slug) {
@@ -223,45 +217,13 @@ export default factories.createCoreController(
       }
     },
 
-    /**
-     * 获取特色产品列表
-     *
-     * @param {Context} ctx - Koa context
-     */
-    async getFeatured(ctx: Context) {
-      try {
-        const { limit = 8 } = ctx.query;
-
-        // 设置默认状态为已发布
-        ctx.query.status = ctx.query.status || "published";
-
-        // 查询产品
-        const products = await strapi.entityService.findMany(
-          "api::product.product",
-          {
-            sort: { createdAt: "desc" }, // 默认按创建日期降序排列
-            fields: ["id", "name", "slug", "code"],
-            populate: {
-              featured_image: { fields: ["url"] },
-            },
-            limit: Number(limit) || 8,
-          }
-        );
-
-        return {
-          data: products,
-        };
-      } catch (error) {
-        ctx.throw(500, error);
-      }
-    },
 
     /**
      * 搜索产品
      *
      * @param {Context} ctx - Koa context
      */
-    async search(ctx: Context) {
+    async searchProducts(ctx: Context) {
       try {
         const { query } = ctx.query;
         if (!query || typeof query !== "string") {

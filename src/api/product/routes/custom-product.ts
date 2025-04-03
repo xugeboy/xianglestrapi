@@ -6,15 +6,18 @@ export default {
   routes: [
     {
       method: 'GET',
-      path: '/products/attribute-filters',
-      handler: 'custom-product.getAttributeFilters',
+      path: '/getAttributeFiltersByCategorySlug',
+      handler: 'custom-product.getAttributeFiltersByCategorySlug',
       config: {
         auth: false,
+        params: {
+          categorySlug: { type: 'string' },
+        }
       },
     },
     {
-      method: 'GET',
-      path: '/products/filter',
+      method: 'POST',
+      path: '/filterProducts',
       handler: 'custom-product.filterProducts',
       config: {
         auth: false,
@@ -22,24 +25,19 @@ export default {
     },
     {
       method: 'GET',
-      path: '/products/:slug',
-      handler: 'custom-product.getBySlug',
+      path: '/getProductBySlug',
+      handler: 'custom-product.getProductBySlug',
       config: {
         auth: false,
+        params: {
+          slug: { type: 'string' },
+        },
       },
     },
     {
       method: 'GET',
-      path: '/products/featured',
-      handler: 'custom-product.getFeatured',
-      config: {
-        auth: false,
-      },
-    },
-    {
-      method: 'GET',
-      path: '/products/search',
-      handler: 'custom-product.search',
+      path: '/searchProducts',
+      handler: 'custom-product.searchProducts',
       config: {
         auth: false,
       },
