@@ -217,7 +217,7 @@ export default factories.createCoreController(
           return ctx.notFound("Product not found");
         }
 
-        return products[0];
+        return { data: products[0] };
       } catch (error) {
         ctx.throw(500, error);
       }
@@ -225,17 +225,18 @@ export default factories.createCoreController(
 
     /**
      * 根据分类slug获取产品列表
+     * 包括该分类及其所有子分类的产品
      *
      * @param {Context} ctx - Koa context
      */
     async getByCategorySlug(ctx: Context) {
       try {
-        const { slug } = ctx.params;
-        if (!slug) {
+        const { categorySlug } = ctx.params;
+        if (!categorySlug) {
           return ctx.badRequest("Category slug is required");
         }
 
-        const { page = 1, pageSize = 12 } = ctx.query;
+        const { page = 1, pageSize = 12, includeChildren = true } = ctx.query;
 
         // 设置默认状态为已发布
         ctx.query.status = ctx.query.status || "published";
@@ -244,18 +245,48 @@ export default factories.createCoreController(
         const start = ((Number(page) || 1) - 1) * (Number(pageSize) || 12);
         const limit = Number(pageSize) || 12;
 
+        // 构建查询条件
+        const filters: any = {
+          category: {
+            slug: categorySlug,
+          },
+        };
+
+        // 如果需要包含子分类的产品
+        if (includeChildren === 'true' || includeChildren === true) {
+          // 获取所有子分类的ID
+          const subCategories = await strapi.entityService.findMany(
+            "api::product-category.product-category",
+            {
+              filters: {
+                parent: {
+                  slug: categorySlug,
+                },
+              },
+              fields: ["id", "slug"],
+            }
+          );
+
+          // 如果有子分类，添加到查询条件中
+          if (subCategories && subCategories.length > 0) {
+            const subCategorySlugs = subCategories.map((cat: any) => cat.slug);
+            filters.category = {
+              slug: {
+                $in: [categorySlug, ...subCategorySlugs],
+              },
+            };
+          }
+        }
+
         // 查询产品
         const products = await strapi.entityService.findMany(
           "api::product.product",
           {
-            filters: {
-              category: {
-                slug: slug,
-              },
-            },
+            filters,
             fields: ["id", "name", "slug", "code"],
             populate: {
               featured_image: { fields: ["url"] },
+              category: { fields: ["id", "name", "slug"] },
             },
             start,
             limit,
@@ -264,11 +295,7 @@ export default factories.createCoreController(
 
         // 获取符合条件的总数
         const total = await strapi.entityService.count("api::product.product", {
-          filters: {
-            category: {
-              slug: slug,
-            },
-          },
+          filters,
         });
 
         return {

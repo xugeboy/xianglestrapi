@@ -22,7 +22,7 @@ export default {
     },
     {
       method: 'GET',
-      path: '/products/slug/:slug',
+      path: '/products/:slug',
       handler: 'custom-product.getBySlug',
       config: {
         auth: false,
@@ -30,7 +30,7 @@ export default {
     },
     {
       method: 'GET',
-      path: '/products/category/:slug',
+      path: '/products/:categorySlug',
       handler: 'custom-product.getByCategorySlug',
       config: {
         auth: false,
