@@ -42,6 +42,13 @@ export default {
         config: {
           auth: false,
         },
+    },{
+        method: 'GET',
+        path: '/getAllProductSlug',
+        handler: 'custom-product.getAllProductSlug',
+        config: {
+          auth: false,
+        },
     },
   ],
 }; 

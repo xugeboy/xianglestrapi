@@ -93,9 +93,6 @@ export default factories.createCoreController(
               slug: slug,
             },
             fields: ["seo_title", "seo_description"],
-            populate: {
-              featured_image: { fields: ["url"] },
-            },
           }
         );
       } catch (error) {

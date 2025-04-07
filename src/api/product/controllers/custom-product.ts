@@ -258,6 +258,30 @@ export default factories.createCoreController(
       }
     },
     /**
+     * 搜索产品
+     *
+     * @param {Context} ctx - Koa context
+     */
+    async getAllProductSlug(ctx: Context) {
+        try {
+          // 设置默认状态为已发布
+          ctx.query.status = "published";
+  
+          // 查询产品
+          const products = await strapi.entityService.findMany(
+            "api::product.product",
+            {
+              fields: ["slug"],
+            }
+          );
+          return {
+            data: products,
+          };
+        } catch (error) {
+          ctx.throw(500, error);
+        }
+      },
+    /**
      * 分页获取当前分类下的产品列表
      *
      * @param {Context} ctx - Koa context
