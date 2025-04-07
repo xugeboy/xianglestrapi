@@ -114,6 +114,12 @@
     },
     "youtube_title": {
       "type": "string"
+    },
+    "seo_title": {
+      "type": "string"
+    },
+    "seo_description": {
+      "type": "text"
     }
   }
 }
