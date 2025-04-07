@@ -14,13 +14,10 @@ export default {
     },
     {
       method: 'GET',
-      path: '/getCategoryBySlug',
+      path: '/getCategoryBySlug/:slug',
       handler: 'custom-product-category.getCategoryBySlug',
       config: {
         auth: false,
-        params: {
-          slug: { type: 'string' },
-        },
       },
     },
   ],

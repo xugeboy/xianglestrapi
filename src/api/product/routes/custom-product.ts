@@ -6,13 +6,10 @@ export default {
   routes: [
     {
       method: 'GET',
-      path: '/getAttributeFiltersByCategorySlug',
+      path: '/getAttributeFiltersByCategorySlug/:slug',
       handler: 'custom-product.getAttributeFiltersByCategorySlug',
       config: {
         auth: false,
-        params: {
-          categorySlug: { type: 'string' },
-        }
       },
     },
     {
@@ -26,7 +23,7 @@ export default {
     {
       method: 'GET',
       path: '/getProductBySlug',
-      handler: 'custom-product.getProductBySlug',
+      handler: 'custom-product.getProductBySlug/:slug',
       config: {
         auth: false,
       },
@@ -34,7 +31,7 @@ export default {
     {
       method: 'GET',
       path: '/searchProducts',
-      handler: 'custom-product.searchProducts',
+      handler: 'custom-product.searchProducts/:slug',
       config: {
         auth: false,
       },

@@ -19,7 +19,7 @@ export default factories.createCoreController(
     async getAllCategories(ctx: Context) {
       try {
         // 设置默认状态为已发布
-        ctx.query.status = ctx.query.status || "published";
+        ctx.query.status = "published";
 
         const categories = await strapi.entityService.findMany(
           "api::product-category.product-category",
@@ -56,7 +56,7 @@ export default factories.createCoreController(
         const { page = 1, pageSize = 12, includeChildren = true } = ctx.query;
 
         // 设置默认状态为已发布
-        ctx.query.status = ctx.query.status || "published";
+        ctx.query.status = "published";
 
         // 分页参数
         const start = ((Number(page) || 1) - 1) * (Number(pageSize) || 12);
