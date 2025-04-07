@@ -49,6 +49,13 @@ export default {
         config: {
           auth: false,
         },
+    },{
+        method: 'GET',
+        path: '/getProductMetaDataBySlug/:slug',
+        handler: 'custom-product-category.getProductMetaDataBySlug',
+        config: {
+          auth: false,
+        },
     },
   ],
 }; 

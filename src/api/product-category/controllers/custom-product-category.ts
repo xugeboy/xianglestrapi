@@ -95,6 +95,36 @@ export default factories.createCoreController(
             fields: ["seo_title", "seo_description"],
           }
         );
+
+        return {
+          data: category,
+        };
+      } catch (error) {
+        ctx.throw(500, error);
+      }
+    },
+    /**
+     * 获取所有分类slug及其children
+     *
+     * @param {Context} ctx - Koa context
+     * @returns {Promise<{data: Object}>} 返回分类详情数据
+     */
+    async getAllCategorySlugAndChildren(ctx: Context) {
+      try {
+        // 设置默认状态为已发布
+        ctx.query.status = "published";
+        const categories = await strapi.entityService.findMany(
+          "api::product-category.product-category",
+          {
+            fields: ["slug"],
+            populate: {
+              children: { fields: ["slug"] },
+            },
+          }
+        );
+        return {
+          data: categories,
+        };
       } catch (error) {
         ctx.throw(500, error);
       }

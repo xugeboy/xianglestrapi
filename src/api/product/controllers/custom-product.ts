@@ -263,24 +263,24 @@ export default factories.createCoreController(
      * @param {Context} ctx - Koa context
      */
     async getAllProductSlug(ctx: Context) {
-        try {
-          // 设置默认状态为已发布
-          ctx.query.status = "published";
-  
-          // 查询产品
-          const products = await strapi.entityService.findMany(
-            "api::product.product",
-            {
-              fields: ["slug"],
-            }
-          );
-          return {
-            data: products,
-          };
-        } catch (error) {
-          ctx.throw(500, error);
-        }
-      },
+      try {
+        // 设置默认状态为已发布
+        ctx.query.status = "published";
+
+        // 查询产品
+        const products = await strapi.entityService.findMany(
+          "api::product.product",
+          {
+            fields: ["slug"],
+          }
+        );
+        return {
+          data: products,
+        };
+      } catch (error) {
+        ctx.throw(500, error);
+      }
+    },
     /**
      * 分页获取当前分类下的产品列表
      *
@@ -294,35 +294,35 @@ export default factories.createCoreController(
           return ctx.badRequest("Category slug is required");
         }
 
-         // 构建查询条件
-         const filters: any = {
-            category: {
-              slug: slug,
-            },
-          };
+        // 构建查询条件
+        const filters: any = {
+          category: {
+            slug: slug,
+          },
+        };
 
         // 获取所有子分类的ID
         const subCategories = await strapi.entityService.findMany(
-            "api::product-category.product-category",
-            {
-              filters: {
-                parent: {
-                  slug: slug,
-                },
+          "api::product-category.product-category",
+          {
+            filters: {
+              parent: {
+                slug: slug,
               },
-              fields: ["id", "slug"],
-            }
-          );
-
-          // 如果有子分类，添加到查询条件中
-          if (subCategories && subCategories.length > 0) {
-            const subCategorySlugs = subCategories.map((cat: any) => cat.slug);
-            filters.category = {
-              slug: {
-                $in: [slug, ...subCategorySlugs],
-              },
-            };
+            },
+            fields: ["id", "slug"],
           }
+        );
+
+        // 如果有子分类，添加到查询条件中
+        if (subCategories && subCategories.length > 0) {
+          const subCategorySlugs = subCategories.map((cat: any) => cat.slug);
+          filters.category = {
+            slug: {
+              $in: [slug, ...subCategorySlugs],
+            },
+          };
+        }
 
         const products = await strapi.entityService.findMany(
           "api::product.product",
@@ -344,6 +344,36 @@ export default factories.createCoreController(
             pagination: { total, page, pageSize },
           },
         });
+      } catch (error) {
+        ctx.throw(500, error);
+      }
+    } /**
+     * 根据slug获取产品SEO_METADATA
+     *
+     * @param {Context} ctx - Koa context
+     * @returns {Promise<{data: Object}>} 返回分类详情数据
+     */,
+    async getProductMetaDataBySlug(ctx: Context) {
+      try {
+        const { slug } = ctx.params;
+        if (!slug) {
+          return ctx.badRequest("Category slug is required");
+        }
+
+        // 设置默认状态为已发布
+        ctx.query.status = "published";
+        const product = await strapi.entityService.findMany(
+          "api::product.product",
+          {
+            filters: {
+              slug: slug,
+            },
+            fields: ["seo_title", "seo_description"],
+          }
+        );
+        return {
+          data: product,
+        };
       } catch (error) {
         ctx.throw(500, error);
       }

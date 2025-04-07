@@ -26,6 +26,6 @@ export default {
         config: {
           auth: false,
         },
-      },
+    },
   ],
 }; 
