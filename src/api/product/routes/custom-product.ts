@@ -52,7 +52,7 @@ export default {
     },{
         method: 'GET',
         path: '/getProductMetaDataBySlug/:slug',
-        handler: 'custom-product-category.getProductMetaDataBySlug',
+        handler: 'custom-product.getProductMetaDataBySlug',
         config: {
           auth: false,
         },
