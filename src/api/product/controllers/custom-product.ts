@@ -257,5 +257,36 @@ export default factories.createCoreController(
         ctx.throw(500, error);
       }
     },
+    async getProductsByCategorySlug(ctx: Context) {
+      try {
+        const { slug } = ctx.params;
+        const { page = 1, pageSize = 12, sort = "createdAt:desc" } = ctx.query;
+        if (!slug) {
+          return ctx.badRequest("Category slug is required");
+        }
+        const products = await strapi.entityService.findMany(
+          "api::product.product",
+          {
+            filters: { category: { slug: slug } },
+            fields: ["id", "name", "slug", "code"],
+            populate: ["featured_image"],
+            sort: sort,
+            start: (Number(page) - 1) * Number(pageSize),
+            limit: Number(pageSize),
+          }
+        );
+        const total = await strapi.entityService.count("api::product.product", {
+          filters: { category: { slug: slug } },
+        });
+        return ctx.send({
+          data: products,
+          meta: {
+            pagination: { total, page, pageSize },
+          },
+        });
+      } catch (error) {
+        ctx.throw(500, error);
+      }
+    },
   })
 );

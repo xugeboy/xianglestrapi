@@ -35,6 +35,13 @@ export default {
       config: {
         auth: false,
       },
+    },{
+        method: 'GET',
+        path: '/getProductsByCategorySlug/:slug',
+        handler: 'custom-product.getProductsByCategorySlug',
+        config: {
+          auth: false,
+        },
     },
   ],
 }; 
