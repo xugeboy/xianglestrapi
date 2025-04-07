@@ -6,7 +6,7 @@ export default {
   routes: [
     {
       method: 'GET',
-      path: '/getAttributeFiltersByCategorySlug/:slug',
+      path: '/getAttributeFiltersByCategorySlug/:categorySlug',
       handler: 'custom-product.getAttributeFiltersByCategorySlug',
       config: {
         auth: false,
