@@ -15,7 +15,7 @@ export default factories.createCoreController(
      */
     async getAttributeFiltersByCategorySlug(ctx: Context) {
       try {
-        const { categorySlug } = ctx.query;
+        const { categorySlug } = ctx.params;
 
         // 设置默认状态为已发布
         ctx.query.status = "published";
