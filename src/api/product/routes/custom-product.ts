@@ -22,16 +22,16 @@ export default {
     },
     {
       method: 'GET',
-      path: '/getProductBySlug',
-      handler: 'custom-product.getProductBySlug/:slug',
+      path: '/getProductBySlug/:slug',
+      handler: 'custom-product.getProductBySlug',
       config: {
         auth: false,
       },
     },
     {
       method: 'GET',
-      path: '/searchProducts',
-      handler: 'custom-product.searchProducts/:slug',
+      path: '/searchProducts/:slug',
+      handler: 'custom-product.searchProducts',
       config: {
         auth: false,
       },
