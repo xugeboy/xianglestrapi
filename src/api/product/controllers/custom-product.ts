@@ -26,7 +26,7 @@ export default factories.createCoreController(
         // 如果提供了分类Slug，添加到查询条件
         if (categorySlug) {
           baseQuery.category = {
-            category: categorySlug,
+            slug: categorySlug,
           };
         }
 
