@@ -14,11 +14,18 @@ export default {
     },
     {
       method: 'GET',
-      path: '/getCategoryBySlug/:slug',
-      handler: 'custom-product-category.getCategoryBySlug',
+      path: '/getCategoryDetailsBySlug/:slug',
+      handler: 'custom-product-category.getCategoryDetailsBySlug',
       config: {
         auth: false,
       },
-    },
+    },{
+        method: 'GET',
+        path: '/getCategoryMetaDataBySlug/:slug',
+        handler: 'custom-product-category.getCategoryMetaDataBySlug',
+        config: {
+          auth: false,
+        },
+      },
   ],
 }; 
