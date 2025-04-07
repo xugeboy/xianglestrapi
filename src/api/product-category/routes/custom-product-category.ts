@@ -26,6 +26,13 @@ export default {
         config: {
           auth: false,
         },
+    },{
+        method: 'GET',
+        path: '/getAllCategorySlugAndChildren',
+        handler: 'custom-product-category.getAllCategorySlugAndChildren',
+        config: {
+          auth: false,
+        },
     },
   ],
 }; 
