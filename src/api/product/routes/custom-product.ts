@@ -30,7 +30,7 @@ export default {
     },
     {
       method: 'GET',
-      path: '/searchProducts/:slug',
+      path: '/searchProducts/:query',
       handler: 'custom-product.searchProducts',
       config: {
         auth: false,
