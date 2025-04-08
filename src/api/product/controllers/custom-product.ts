@@ -86,18 +86,16 @@ export default factories.createCoreController(
     async filterProducts(ctx: Context) {
       try {
         // 获取请求体参数（POST 请求用 ctx.request.body）
-        const status = ctx.request.body.status || "published";
         const {
           categorySlug,
           page = 1,
           pageSize = 10,
           attributeFilters = {}, // 允许空对象
         } = ctx.request.body;
+        ctx.query.status = "published";
 
         // 构建查询条件
-        const filters: any = {
-          status: status,
-        };
+        const filters: any = {};
 
         // 添加分类筛选条件
         if (categorySlug) {
