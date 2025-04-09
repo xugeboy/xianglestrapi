@@ -393,7 +393,6 @@ async function getAllSubCategorySlugs(slug: string): Promise<string[]> {
             slug: currentSlug,
           },
         },
-        sort: { sort: "asc" },
         fields: ["slug"],
       }
     );

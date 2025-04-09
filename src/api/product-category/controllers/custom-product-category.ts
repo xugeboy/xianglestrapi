@@ -117,6 +117,7 @@ export default factories.createCoreController(
           "api::product-category.product-category",
           {
             fields: ["slug", "name"],
+            sort: { sort: "asc" },
             populate: {
               children: { fields: ["slug"] },
             },
