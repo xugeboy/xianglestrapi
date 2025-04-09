@@ -97,10 +97,12 @@ export default factories.createCoreController(
         // 构建查询条件
         const filters: any = {};
 
-        // 添加分类筛选条件
-        if (categorySlug) {
-          filters.category = { slug: categorySlug };
-        }
+        const allCategorySlugs = await getAllSubCategorySlugs(categorySlug);
+        filters.category = {
+          slug: {
+            $in: allCategorySlugs,
+          },
+        };
 
         // 添加属性筛选条件
         Object.keys(attributeFilters).forEach((key) => {
@@ -378,3 +380,30 @@ export default factories.createCoreController(
     },
   })
 );
+
+async function getAllSubCategorySlugs(slug: string): Promise<string[]> {
+  const result: string[] = [slug];
+
+  async function recurse(currentSlug: string) {
+    const children = await strapi.entityService.findMany(
+      "api::product-category.product-category",
+      {
+        filters: {
+          parent: {
+            slug: currentSlug,
+          },
+        },
+        fields: ["slug"],
+      }
+    );
+
+    for (const child of children) {
+      result.push(child.slug);
+      await recurse(child.slug);
+    }
+  }
+
+  await recurse(slug);
+
+  return result;
+}
