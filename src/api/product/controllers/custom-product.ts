@@ -23,12 +23,12 @@ export default factories.createCoreController(
         // 基础查询条件
         const baseQuery: any = {};
 
-        // 如果提供了分类Slug，添加到查询条件
-        if (categorySlug) {
-          baseQuery.category = {
-            slug: categorySlug,
-          };
-        }
+        const allCategorySlugs = await getAllSubCategorySlugs(categorySlug);
+        baseQuery.category = {
+          slug: {
+            $in: allCategorySlugs,
+          },
+        };
 
         // 定义要分组的属性字段
         const attributeFields = [
