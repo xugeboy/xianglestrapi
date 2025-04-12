@@ -7,7 +7,7 @@ export default {
     {
       "method": "POST",
       "path": "/submitInquiry",
-      "handler": "inquiry.submitInquiry",
+      "handler": "custom-inquiry.submitInquiry",
       "config": {
         "policies": []
       }

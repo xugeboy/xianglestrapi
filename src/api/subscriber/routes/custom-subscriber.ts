@@ -7,7 +7,7 @@ export default {
     {
       "method": "POST",
       "path": "/submitSubscribe",
-      "handler": "subscriber.submitSubscribe",
+      "handler": "custom-subscriber.submitSubscribe",
       "config": {
         "policies": []
       }
