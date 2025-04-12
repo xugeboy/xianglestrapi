@@ -12,48 +12,53 @@ import { factories } from "@strapi/strapi";
  * @returns {string} Plain text representation.
  */
 function convertBlocksToText(blocks) {
-  if (!Array.isArray(blocks)) return '';
+  if (!Array.isArray(blocks)) return "";
   try {
-      return blocks
-          .filter(block => block.type === 'paragraph' && Array.isArray(block.children))
-          .map(block => block.children.map(child => child.text || '').join(''))
-          .join('\n\n'); // 段落之间用双换行分隔
+    return blocks
+      .filter(
+        (block) => block.type === "paragraph" && Array.isArray(block.children)
+      )
+      .map((block) => block.children.map((child) => child.text || "").join(""))
+      .join("\n\n"); // 段落之间用双换行分隔
   } catch (e) {
-      strapi.log.error('Error converting blocks to text:', e);
-      return '[Error processing message content]';
+    strapi.log.error("Error converting blocks to text:", e);
+    return "[Error processing message content]";
   }
 }
 
 /**
-* Converts Strapi blocks JSON to basic HTML.
-* @param {Array<object>|null|undefined} blocks - The blocks data.
-* @returns {string} HTML representation.
-*/
+ * Converts Strapi blocks JSON to basic HTML.
+ * @param {Array<object>|null|undefined} blocks - The blocks data.
+ * @returns {string} HTML representation.
+ */
 function convertBlocksToHtml(blocks) {
-  if (!Array.isArray(blocks)) return '';
+  if (!Array.isArray(blocks)) return "";
   try {
-      let html = '';
-      for (const block of blocks) {
-          if (block.type === 'paragraph' && Array.isArray(block.children)) {
-              html += '<p>';
-              for (const child of block.children) {
-                  let text = (child.text || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); // 基本HTML转义
-                  if (child.bold) text = `<strong>${text}</strong>`;
-                  if (child.italic) text = `<em>${text}</em>`;
-                  if (child.underline) text = `<u>${text}</u>`;
-                  // 你可能需要添加对链接、列表、标题等的处理
-                  html += text;
-              }
-              html += '</p>';
-          }
-          // 在此添加对其他块类型（如 heading, list, image 等）的处理逻辑
-          // else if (block.type === 'heading') { ... }
-          // else if (block.type === 'list') { ... }
+    let html = "";
+    for (const block of blocks) {
+      if (block.type === "paragraph" && Array.isArray(block.children)) {
+        html += "<p>";
+        for (const child of block.children) {
+          let text = (child.text || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;"); // 基本HTML转义
+          if (child.bold) text = `<strong>${text}</strong>`;
+          if (child.italic) text = `<em>${text}</em>`;
+          if (child.underline) text = `<u>${text}</u>`;
+          // 你可能需要添加对链接、列表、标题等的处理
+          html += text;
+        }
+        html += "</p>";
       }
-      return html;
+      // 在此添加对其他块类型（如 heading, list, image 等）的处理逻辑
+      // else if (block.type === 'heading') { ... }
+      // else if (block.type === 'list') { ... }
+    }
+    return html;
   } catch (e) {
-      strapi.log.error('Error converting blocks to HTML:', e);
-      return '<p>[Error processing message content]</p>';
+    strapi.log.error("Error converting blocks to HTML:", e);
+    return "<p>[Error processing message content]</p>";
   }
 }
 
@@ -66,6 +71,14 @@ export default factories.createCoreController(
         // 注意: 'position' 是大写 P，确保前端发送的键名一致
         const { name, email, phone, company, position, message } =
           ctx.request.body;
+        const inquiryData = {
+          name,
+          email,
+          phone,
+          company,
+          position,
+          message,
+        };
         const files = ctx.request.files;
 
         // (可选) 添加后端验证，例如检查必需字段
@@ -173,8 +186,11 @@ export default factories.createCoreController(
             );
           }
         }
-
-        // 3. 构造包含所有字段的邮件选项
+        // 3. 保存询盘数据
+        await strapi.entityService.create("api::inquiry.inquiry", {
+          data: inquiryData,
+        });
+        // 4. 构造包含所有字段的邮件选项
         const emailOptions = {
           to: "info@xianglecargocontrol.com", // 修改为你的接收邮箱
           from: "info@xiangleratchetstrap.com",
@@ -212,7 +228,7 @@ ${attachments.length > 0 ? `${attachments.length} file(s) attached.` : "No files
           attachments: attachments,
         };
 
-        // 4. 发送邮件并进行清理 (try...finally 结构保持不变)
+        // 5. 发送邮件并进行清理 (try...finally 结构保持不变)
         try {
           strapi.log.info(
             `Sending email with ${attachments.length} attachments to ${emailOptions.to}...`
