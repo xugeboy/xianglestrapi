@@ -7,7 +7,7 @@ import { factories } from "@strapi/strapi";
 export default factories.createCoreController(
   "api::inquiry.inquiry",
   ({ strapi }) => ({
-    async create(ctx) {
+    async submitInquiry(ctx) {
       try {
         const { name, email, phone, company, position, message } = ctx.request.body;
   
