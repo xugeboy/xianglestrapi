@@ -126,7 +126,7 @@ export default factories.createCoreController(
         // 2. 准备邮件附件 (最多3个文件 - 逻辑不变)
         const attachments = [];
         const processedTempFilePaths = [];
-        const uploadedFilesInput = files?.attachmentFiles; // 确保使用你前端设置的文件字段名
+        const uploadedFilesInput = files?.attachment; // 确保使用你前端设置的文件字段名
         const filesToProcess = Array.isArray(uploadedFilesInput)
           ? uploadedFilesInput
           : uploadedFilesInput
@@ -203,7 +203,7 @@ Name: ${name || "N/A"}
 Email: ${email || "N/A"}
 Phone: ${phone || "N/A"}
 Company: ${company || "N/A"}
-position: ${position || "N/A"}
+Position: ${position || "N/A"}
 --------------------------------
 Message:
 ${messageText || "N/A"}
@@ -217,7 +217,7 @@ ${attachments.length > 0 ? `${attachments.length} file(s) attached.` : "No files
                 <p><strong>Email:</strong> <a href="mailto:${email}">${email || "N/A"}</a></p>
                 <p><strong>Phone:</strong> ${phone || "N/A"}</p>
                 <p><strong>Company:</strong> ${company || "N/A"}</p>
-                <p><strong>position:</strong> ${position || "N/A"}</p>
+                <p><strong>Position:</strong> ${position || "N/A"}</p>
                 <hr>
                 <h2>Message:</h2>
                 <div>${messageHtml || "<p>N/A</p>"}</div>
