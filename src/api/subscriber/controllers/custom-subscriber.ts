@@ -12,8 +12,12 @@ export default factories.createCoreController(
         const { email } = ctx.request.body;
   
         // 验证电子邮件是否已存在
-        const existingSubscriber = await strapi.services.subscriber.findOne({ email });
-        if (existingSubscriber) {
+        const existingSubscriber = await strapi.entityService.findMany('api::subscriber.subscriber', {
+          filters: { email },
+          limit: 1,
+        });
+        
+        if (existingSubscriber.length > 0) {
           return ctx.send({ message: 'This email is already subscribed.' }, 400);
         }
   
