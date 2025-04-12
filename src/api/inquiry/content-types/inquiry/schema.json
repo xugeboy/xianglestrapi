@@ -22,21 +22,11 @@
     "company": {
       "type": "string"
     },
-    "Position": {
+    "position": {
       "type": "string"
     },
     "message": {
       "type": "blocks"
-    },
-    "attachment": {
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos",
-        "audios"
-      ],
-      "type": "media",
-      "multiple": true
     }
   }
 }

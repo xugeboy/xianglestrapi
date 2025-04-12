@@ -9,7 +9,8 @@ export default {
       "path": "/submitInquiry",
       "handler": "custom-inquiry.submitInquiry",
       "config": {
-        "policies": []
+        policies: [],
+        auth: false
       }
     }
   ]
