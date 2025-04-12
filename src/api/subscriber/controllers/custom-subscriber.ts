@@ -22,7 +22,11 @@ export default factories.createCoreController(
         }
   
         // 保存订阅者数据
-        const newSubscriber = await strapi.services.subscriber.create({ email });
+        const newSubscriber = await strapi.entityService.create('api::subscriber.subscriber', {
+          data: {
+            email,
+          },
+        });
   
         // 返回成功响应
         ctx.send({ message: 'Subscription successful', subscriber: newSubscriber });
