@@ -14,6 +14,14 @@ export default {
     },
     {
       method: "GET",
+      path: "/getAllBlogSlug",
+      handler: "custom-blog.getAllBlogSlug",
+      config: {
+        auth: false,
+      },
+    },
+    {
+      method: "GET",
       path: "/getBlogDetail",
       handler: "custom-blog.getBlogDetail",
       config: {

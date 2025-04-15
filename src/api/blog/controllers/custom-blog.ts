@@ -3,11 +3,12 @@
  */
 
 import { factories } from "@strapi/strapi";
+import { Context } from "koa";
 
 export default factories.createCoreController(
   "api::blog.blog",
   ({ strapi }) => ({
-    async getBlogList(ctx) {
+    async getBlogList(ctx:Context) {
       try {
         // 获取 GET 请求的查询参数
         const { pageNumber = 1 } = ctx.query;
@@ -46,7 +47,7 @@ export default factories.createCoreController(
         ctx.throw(500, "Error fetching filtered blogs", { error });
       }
     },
-    async getBlogDetail(ctx) {
+    async getBlogDetail(ctx:Context) {
       try {
         const { slug } = ctx.params;
         if (!slug) {
@@ -72,6 +73,23 @@ export default factories.createCoreController(
         }
 
         return { data: blogs[0] };
+      } catch (error) {
+        ctx.throw(500, error);
+      }
+    },
+    async getAllBlogSlug(ctx:Context) {
+      try {
+        // 设置默认状态为已发布
+        ctx.query.status = "published";
+        const blogs = await strapi.entityService.findMany(
+          "api::blog.blog",
+          {
+            fields: ["slug"],
+          }
+        );
+        return {
+          data: blogs,
+        };
       } catch (error) {
         ctx.throw(500, error);
       }
