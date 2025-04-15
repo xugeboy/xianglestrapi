@@ -5,7 +5,7 @@
 export default {
   routes: [
     {
-      method: "get",
+      method: "GET",
       path: "/getBlogList",
       handler: "custom-blog.getBlogList",
       config: {
@@ -13,7 +13,7 @@ export default {
       },
     },
     {
-      method: "get",
+      method: "GET",
       path: "/getBlogDetail",
       handler: "custom-blog.getBlogDetail",
       config: {
