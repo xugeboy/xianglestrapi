@@ -9,30 +9,24 @@ export default factories.createCoreController(
   ({ strapi }) => ({
     async getBlogList(ctx) {
       try {
-        // 获取请求体参数（POST 请求用 ctx.request.body）
-        const {
-          page = 1,
-          pageSize = 12,
-        } = ctx.request.body;
+        // 获取 GET 请求的查询参数
+        const { pageNumber = 1 } = ctx.query;
         ctx.query.status = "published";
 
         // 计算分页参数
-        const start = (Number(page) - 1) * Number(pageSize);
-        const limit = Number(pageSize);
+        const start = (Number(pageNumber) - 1) * 12;
+        const limit = 12;
 
         // 查询产品
-        const blogs = await strapi.entityService.findMany(
-          "api::blog.blog",
-          {
-            fields: ["id", "title", "slug", "excerpt"],
-            populate: {
-              cover_image: { fields: ["url"] }
-            },
-            sort: { createdAt: "desc" },
-            start,
-            limit,
-          }
-        );
+        const blogs = await strapi.entityService.findMany("api::blog.blog", {
+          fields: ["id", "title", "slug", "excerpt"],
+          populate: {
+            cover_image: { fields: ["url"] },
+          },
+          sort: { createdAt: "desc" },
+          start,
+          limit,
+        });
 
         // 获取符合条件的总数
         const total = await strapi.entityService.count("api::product.product");
@@ -41,7 +35,7 @@ export default factories.createCoreController(
           data: blogs,
           meta: {
             pagination: {
-              page: Number(page),
+              page: Number(pageNumber),
               pageSize: limit,
               pageCount: Math.ceil(total / limit),
               total,
@@ -63,23 +57,15 @@ export default factories.createCoreController(
         ctx.query.status = "published";
 
         // 查询产品
-        const blogs = await strapi.entityService.findMany(
-          "api::blog.blog",
-          {
-            filters: {
-              slug: slug,
-            },
-            fields: [
-              "id",
-              "title",
-              "slug",
-              "content",
-            ],
-            populate: {
-              cover_image: { fields: ["url"] }
-            },
-          }
-        );
+        const blogs = await strapi.entityService.findMany("api::blog.blog", {
+          filters: {
+            slug: slug,
+          },
+          fields: ["id", "title", "slug", "content"],
+          populate: {
+            cover_image: { fields: ["url"] },
+          },
+        });
 
         if (!blogs || blogs.length === 0) {
           return ctx.notFound("Blog not found");
@@ -89,6 +75,6 @@ export default factories.createCoreController(
       } catch (error) {
         ctx.throw(500, error);
       }
-    }
+    },
   })
 );
