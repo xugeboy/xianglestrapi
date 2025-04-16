@@ -191,6 +191,10 @@ export default factories.createCoreController(
               "ratchet_handle",
               "finish",
               "product_weight",
+              "seo_title",
+              "seo_description",
+              "publishedAt",
+              "updatedAt",
             ],
             populate: {
               featured_image: { fields: ["url"] },
@@ -372,10 +376,6 @@ export default factories.createCoreController(
               "slug",
               "name",
               "code",
-              "seo_title",
-              "seo_description",
-              "publishedAt",
-              "updatedAt",
             ],
             populate: { featured_image: { fields: ["url"] } },
           }
