@@ -362,7 +362,7 @@ export default factories.createCoreController(
 
         // 设置默认状态为已发布
         ctx.query.status = "published";
-        const product = await strapi.entityService.findMany(
+        const products = await strapi.entityService.findMany(
           "api::product.product",
           {
             filters: {
@@ -380,9 +380,7 @@ export default factories.createCoreController(
             populate: { featured_image: { fields: ["url"] } },
           }
         );
-        return {
-          data: product,
-        };
+        return { data: products[0] };
       } catch (error) {
         ctx.throw(500, error);
       }

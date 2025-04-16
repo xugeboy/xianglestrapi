@@ -107,9 +107,8 @@ export default factories.createCoreController(
           populate: {cover_image: { fields: ["url"] }
         }
         });
-        return {
-          data: blogs,
-        };
+        
+        return { data: blogs[0] };
       } catch (error) {
         ctx.throw(500, error);
       }

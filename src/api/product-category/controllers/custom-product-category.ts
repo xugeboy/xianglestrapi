@@ -86,7 +86,7 @@ export default factories.createCoreController(
 
         // 设置默认状态为已发布
         ctx.query.status = "published";
-        const category = await strapi.entityService.findMany(
+        const categories = await strapi.entityService.findMany(
           "api::product-category.product-category",
           {
             filters: {
@@ -104,9 +104,8 @@ export default factories.createCoreController(
           }
         );
 
-        return {
-          data: category,
-        };
+        
+        return { data: categories[0] };
       } catch (error) {
         ctx.throw(500, error);
       }
