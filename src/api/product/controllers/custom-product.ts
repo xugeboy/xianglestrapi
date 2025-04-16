@@ -376,8 +376,8 @@ export default factories.createCoreController(
               "seo_description",
               "publishedAt",
               "updatedAt",
-            ], 
-            populate: { featured_image: { fields: ["url"] }
+            ],
+            populate: { featured_image: { fields: ["url"] } },
           }
         );
         return {
