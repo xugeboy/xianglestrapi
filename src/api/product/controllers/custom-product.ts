@@ -380,7 +380,7 @@ export default factories.createCoreController(
             populate: { featured_image: { fields: ["url"] } },
           }
         );
-        return { data: products[0] };
+        return products[0];
       } catch (error) {
         ctx.throw(500, error);
       }

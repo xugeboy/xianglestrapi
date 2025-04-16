@@ -105,7 +105,7 @@ export default factories.createCoreController(
         );
 
         
-        return { data: categories[0] };
+        return categories[0];
       } catch (error) {
         ctx.throw(500, error);
       }

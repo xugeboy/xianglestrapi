@@ -108,7 +108,7 @@ export default factories.createCoreController(
         }
         });
         
-        return { data: blogs[0] };
+        return blogs[0];
       } catch (error) {
         ctx.throw(500, error);
       }
