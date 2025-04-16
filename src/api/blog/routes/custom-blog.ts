@@ -27,6 +27,14 @@ export default {
       config: {
         auth: false,
       },
+    },
+    {
+      method: "GET",
+      path: "/getBlogMetaDataBySlug",
+      handler: "custom-blog.getBlogMetaDataBySlug",
+      config: {
+        auth: false,
+      },
     }
   ]
 }; 
