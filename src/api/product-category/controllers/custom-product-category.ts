@@ -92,7 +92,15 @@ export default factories.createCoreController(
             filters: {
               slug: slug,
             },
-            fields: ["seo_title", "seo_description"],
+            fields: [
+              "slug",
+              "name",
+              "seo_title",
+              "seo_description",
+              "publishedAt",
+              "updatedAt",
+            ], 
+            populate: { featured_image: { fields: ["url"] }
           }
         );
 
