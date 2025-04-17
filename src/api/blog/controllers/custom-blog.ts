@@ -62,7 +62,16 @@ export default factories.createCoreController(
           filters: {
             slug: slug,
           },
-          fields: ["id", "title", "slug", "content"],
+          fields: [
+            "id",
+            "title",
+            "slug",
+            "content",
+            "seo_title",
+            "seo_description",
+            "publishedAt",
+            "updatedAt",
+          ],
           populate: {
             cover_image: { fields: ["url"] },
           },
@@ -104,10 +113,9 @@ export default factories.createCoreController(
             "publishedAt",
             "updatedAt",
           ],
-          populate: {cover_image: { fields: ["url"] }
-        }
+          populate: { cover_image: { fields: ["url"] } },
         });
-        
+
         return { data: blogs[0] };
       } catch (error) {
         ctx.throw(500, error);
