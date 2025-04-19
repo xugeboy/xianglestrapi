@@ -381,6 +381,8 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    blog: Schema.Attribute.Relation<'manyToOne', 'api::blog.blog'>;
+    blogs: Schema.Attribute.Relation<'oneToMany', 'api::blog.blog'>;
     content: Schema.Attribute.Blocks;
     cover_image: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios'
