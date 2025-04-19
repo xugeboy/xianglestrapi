@@ -191,7 +191,6 @@ export default factories.createCoreController(
               "ratchet_handle",
               "finish",
               "product_weight",
-              "alternating_content",
               "seo_title",
               "seo_description",
               "publishedAt",
@@ -208,6 +207,12 @@ export default factories.createCoreController(
                 },
               },
               related_blogs: { fields: ["id", "title", "slug"] },
+              alternating_content: {
+                fields: ["title", "Text"],
+                populate: {
+                  Image: { fields: ["url"] },
+                },
+              },
             },
           }
         );
