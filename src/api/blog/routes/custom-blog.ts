@@ -22,7 +22,7 @@ export default {
     },
     {
       method: "GET",
-      path: "/getBlogDetail",
+      path: "/getBlogDetail/:slug",
       handler: "custom-blog.getBlogDetail",
       config: {
         auth: false,
@@ -30,7 +30,7 @@ export default {
     },
     {
       method: "GET",
-      path: "/getBlogMetaDataBySlug",
+      path: "/getBlogMetaDataBySlug/:slug",
       handler: "custom-blog.getBlogMetaDataBySlug",
       config: {
         auth: false,
