@@ -20,7 +20,7 @@ export default factories.createCoreController(
 
         // 查询产品
         const blogs = await strapi.entityService.findMany("api::blog.blog", {
-          fields: ["id", "title", "slug", "excerpt"],
+          fields: ["id", "title", "slug", "excerpt", "createdAt"],
           populate: {
             cover_image: { fields: ["url"] },
           },
@@ -68,6 +68,7 @@ export default factories.createCoreController(
             "seo_description",
             "publishedAt",
             "updatedAt",
+            "createdAt",
           ],
           populate: {
             cover_image: { fields: ["url"] },
@@ -116,6 +117,7 @@ export default factories.createCoreController(
             "seo_description",
             "publishedAt",
             "updatedAt",
+            "createdAt",
           ],
           populate: { cover_image: { fields: ["url"] } },
         });
