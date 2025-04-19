@@ -66,7 +66,6 @@ export default factories.createCoreController(
             "id",
             "title",
             "slug",
-            "content",
             "seo_title",
             "seo_description",
             "publishedAt",
