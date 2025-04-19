@@ -525,6 +525,10 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
   };
   attributes: {
     about: Schema.Attribute.RichText;
+    alternating_content: Schema.Attribute.Component<
+      'product.alternating-content',
+      true
+    >;
     assembly_break_strength: Schema.Attribute.String;
     category: Schema.Attribute.Relation<
       'manyToOne',
