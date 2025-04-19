@@ -30,7 +30,7 @@ export default factories.createCoreController(
         });
 
         // 获取符合条件的总数
-        const total = await strapi.entityService.count("api::product.product");
+        const total = await strapi.entityService.count("api::blog.blog");
 
         return ctx.send({
           data: blogs,
@@ -54,10 +54,7 @@ export default factories.createCoreController(
           return ctx.badRequest("Slug is required");
         }
 
-        // 设置默认状态为已发布
         ctx.query.status = "published";
-
-        // 查询产品
         const blogs = await strapi.entityService.findMany("api::blog.blog", {
           filters: {
             slug: slug,
@@ -102,9 +99,16 @@ export default factories.createCoreController(
     },
     async getBlogMetaDataBySlug(ctx: Context) {
       try {
+        const { slug } = ctx.params;
+        if (!slug) {
+          return ctx.badRequest("Slug is required");
+        }
         // 设置默认状态为已发布
         ctx.query.status = "published";
         const blogs = await strapi.entityService.findMany("api::blog.blog", {
+          filters: {
+            slug: slug,
+          },
           fields: [
             "slug",
             "excerpt",
