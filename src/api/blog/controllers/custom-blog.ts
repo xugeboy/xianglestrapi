@@ -68,10 +68,11 @@ export default factories.createCoreController(
             "seo_description",
             "publishedAt",
             "updatedAt",
-            "createdAt",
+            "createdAt"
           ],
           populate: {
             cover_image: { fields: ["url"] },
+            blogs: { fields: ["title","slug"] }
           },
         });
 
