@@ -18,9 +18,6 @@
       "type": "uid",
       "targetField": "title"
     },
-    "content": {
-      "type": "richtext"
-    },
     "excerpt": {
       "type": "text"
     },
@@ -46,6 +43,9 @@
     },
     "seo_description": {
       "type": "text"
+    },
+    "content": {
+      "type": "blocks"
     }
   }
 }
