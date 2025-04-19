@@ -120,12 +120,6 @@
     },
     "seo_description": {
       "type": "text"
-    },
-    "image_text": {
-      "displayName": "alternating_content",
-      "type": "component",
-      "repeatable": true,
-      "component": "product.alternating-content"
     }
   }
 }

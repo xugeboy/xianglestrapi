@@ -441,6 +441,10 @@ export interface ApiInquiryInquiry extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    attachment: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
     company: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -455,7 +459,7 @@ export interface ApiInquiryInquiry extends Struct.CollectionTypeSchema {
     message: Schema.Attribute.Blocks;
     name: Schema.Attribute.String;
     phone: Schema.Attribute.String;
-    position: Schema.Attribute.String;
+    Position: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -543,7 +547,6 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       true
     >;
     grade: Schema.Attribute.String;
-    image_text: Schema.Attribute.Component<'product.alternating-content', true>;
     length: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
