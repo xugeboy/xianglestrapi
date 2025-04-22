@@ -68,11 +68,11 @@ export default factories.createCoreController(
             "seo_description",
             "publishedAt",
             "updatedAt",
-            "createdAt"
+            "createdAt",
           ],
           populate: {
             cover_image: { fields: ["url"] },
-            blogs: { fields: ["title","slug"] }
+            blogs: { fields: ["title", "slug"] },
           },
         });
 
@@ -124,6 +124,26 @@ export default factories.createCoreController(
         });
 
         return { data: blogs[0] };
+      } catch (error) {
+        ctx.throw(500, error);
+      }
+    },
+    async getLatestArticles(ctx: Context) {
+      try {
+        // 设置默认状态为已发布
+        ctx.query.status = "published";
+        const latestBlogs = await strapi.entityService.findMany(
+          "api::blog.blog",
+          {
+            fields: ["slug", "title", "excerpt", "seo_title", "createdAt"],
+            populate: { cover_image: { fields: ["url"] } },
+            sort: { createdAt: "desc" },
+
+            limit: 3,
+          }
+        );
+
+        return { data: latestBlogs };
       } catch (error) {
         ctx.throw(500, error);
       }

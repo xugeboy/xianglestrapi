@@ -35,6 +35,14 @@ export default {
       config: {
         auth: false,
       },
+    },
+    {
+      method: "GET",
+      path: "/getLatestArticles",
+      handler: "custom-blog.getLatestArticles",
+      config: {
+        auth: false,
+      },
     }
   ]
 }; 
