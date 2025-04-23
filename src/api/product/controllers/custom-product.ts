@@ -198,7 +198,7 @@ export default factories.createCoreController(
             ],
             populate: {
               featured_image: { fields: ["url"] },
-              gallery: { fields: ["url"] },
+              gallery: { fields: ["url","name","width","height"] },
               category: { fields: ["id", "name", "slug"] },
               related_products: {
                 fields: ["id", "name", "slug", "code"],
