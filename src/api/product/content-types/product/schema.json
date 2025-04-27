@@ -14,9 +14,6 @@
     "name": {
       "type": "string"
     },
-    "see_more": {
-      "type": "richtext"
-    },
     "about": {
       "type": "richtext"
     },
@@ -125,6 +122,9 @@
       "type": "component",
       "repeatable": true,
       "component": "product.alternating-content"
+    },
+    "see_more": {
+      "type": "blocks"
     }
   }
 }

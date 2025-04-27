@@ -567,7 +567,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       'manyToMany',
       'api::product.product'
     >;
-    see_more: Schema.Attribute.RichText;
+    see_more: Schema.Attribute.Blocks;
     seo_description: Schema.Attribute.Text;
     seo_title: Schema.Attribute.String;
     slug: Schema.Attribute.UID<'name'>;
