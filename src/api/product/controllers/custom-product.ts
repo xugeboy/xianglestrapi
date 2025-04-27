@@ -119,7 +119,7 @@ export default factories.createCoreController(
         const products = await strapi.entityService.findMany(
           "api::product.product",
           {
-            fields: ["id", "name", "slug", "code"],
+            fields: ["id", "name", "slug", "about", "code"],
             filters,
             populate: ["category", "featured_image"],
             sort: { createdAt: "desc" },
@@ -177,7 +177,6 @@ export default factories.createCoreController(
               "slug",
               "code",
               "about",
-              "see_more",
               "youtube_url",
               "assembly_break_strength",
               "length",
@@ -251,7 +250,7 @@ export default factories.createCoreController(
                 $containsi: query,
               },
             },
-            fields: ["id", "name", "slug", "code"],
+            fields: ["id", "name", "slug", "about", "code"],
             populate: {
               featured_image: { fields: ["url"] },
               gallery: { fields: ["url"] },
@@ -338,7 +337,7 @@ export default factories.createCoreController(
           "api::product.product",
           {
             filters: filters,
-            fields: ["id", "name", "slug", "code"],
+            fields: ["id", "name", "slug", "about", "code"],
             populate: ["featured_image"],
             sort: sort,
             start: (Number(page) - 1) * Number(pageSize),
