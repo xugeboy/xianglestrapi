@@ -177,6 +177,7 @@ export default factories.createCoreController(
               "slug",
               "code",
               "about",
+              "see_more",
               "youtube_url",
               "assembly_break_strength",
               "length",
