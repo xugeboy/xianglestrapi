@@ -13,6 +13,7 @@ export default factories.createCoreController(
         // 获取 GET 请求的查询参数
         const { pageNumber = 1 } = ctx.query;
         ctx.query.status = "published";
+        const locale = ctx.query.locale || 'en';
 
         // 计算分页参数
         const start = (Number(pageNumber) - 1) * 12;
@@ -27,6 +28,7 @@ export default factories.createCoreController(
           sort: { createdAt: "desc" },
           start,
           limit,
+          locale:locale
         });
 
         // 获取符合条件的总数
@@ -50,6 +52,7 @@ export default factories.createCoreController(
     async getBlogDetail(ctx: Context) {
       try {
         const { slug } = ctx.params;
+        const locale = ctx.query.locale || 'en';
         if (!slug) {
           return ctx.badRequest("Slug is required");
         }
@@ -74,6 +77,7 @@ export default factories.createCoreController(
             cover_image: { fields: ["url"] },
             blogs: { fields: ["title", "slug"] },
           },
+          locale:locale
         });
 
         if (!blogs || blogs.length === 0) {
@@ -89,8 +93,10 @@ export default factories.createCoreController(
       try {
         // 设置默认状态为已发布
         ctx.query.status = "published";
+        const locale = ctx.query.locale || 'en';
         const blogs = await strapi.entityService.findMany("api::blog.blog", {
           fields: ["slug"],
+          locale:locale
         });
         return {
           data: blogs,
@@ -102,6 +108,7 @@ export default factories.createCoreController(
     async getBlogMetaDataBySlug(ctx: Context) {
       try {
         const { slug } = ctx.params;
+        const locale = ctx.query.locale || 'en';
         if (!slug) {
           return ctx.badRequest("Slug is required");
         }
@@ -120,6 +127,7 @@ export default factories.createCoreController(
             "updatedAt",
             "createdAt",
           ],
+          locale:locale,
           populate: { cover_image: { fields: ["url"] } },
         });
 
@@ -132,13 +140,14 @@ export default factories.createCoreController(
       try {
         // 设置默认状态为已发布
         ctx.query.status = "published";
+        const locale = ctx.query.locale || 'en';
         const latestBlogs = await strapi.entityService.findMany(
           "api::blog.blog",
           {
             fields: ["slug", "title", "excerpt", "seo_title", "createdAt"],
             populate: { cover_image: { fields: ["url"] } },
             sort: { createdAt: "desc" },
-
+            locale: locale,
             limit: 3,
           }
         );

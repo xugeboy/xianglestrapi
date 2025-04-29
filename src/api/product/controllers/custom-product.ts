@@ -16,6 +16,7 @@ export default factories.createCoreController(
     async getAttributeFiltersByCategorySlug(ctx: Context) {
       try {
         const { categorySlug } = ctx.params;
+        const locale = ctx.query.locale || 'en';
 
         // 设置默认状态为已发布
         ctx.query.status = "published";
@@ -49,6 +50,7 @@ export default factories.createCoreController(
           "api::product.product",
           {
             filters: baseQuery,
+            locale: locale
           }
         );
 
@@ -91,13 +93,14 @@ export default factories.createCoreController(
           page = 1,
           pageSize = 10,
           attributeFilters = {}, // 允许空对象
+          locale = 'en'
         } = ctx.request.body;
         ctx.query.status = "published";
 
         // 构建查询条件
         const filters: any = {};
 
-        const allCategorySlugs = await getAllSubCategorySlugs(categorySlug);
+        const allCategorySlugs = await getAllSubCategorySlugs(categorySlug,locale);
         filters.category = {
           slug: {
             $in: allCategorySlugs,
@@ -125,6 +128,7 @@ export default factories.createCoreController(
             sort: { createdAt: "desc" },
             start,
             limit,
+            locale: locale
           }
         );
 
@@ -157,6 +161,7 @@ export default factories.createCoreController(
     async getProductBySlug(ctx: Context) {
       try {
         const { slug } = ctx.params;
+        const locale = ctx.query.locale || 'en';
         if (!slug) {
           return ctx.badRequest("Slug is required");
         }
@@ -214,6 +219,7 @@ export default factories.createCoreController(
                 },
               },
             },
+            locale: locale
           }
         );
 
@@ -235,6 +241,7 @@ export default factories.createCoreController(
     async searchProducts(ctx: Context) {
       try {
         const { query } = ctx.params;
+        const locale = ctx.query.locale || 'en';
         if (!query || typeof query !== "string") {
           return ctx.badRequest("Search query is required");
         }
@@ -257,6 +264,7 @@ export default factories.createCoreController(
               gallery: { fields: ["url"] },
               category: { fields: ["id", "name", "slug"] },
             },
+            locale: locale
           }
         );
 
@@ -276,12 +284,14 @@ export default factories.createCoreController(
       try {
         // 设置默认状态为已发布
         ctx.query.status = "published";
+        const locale = ctx.query.locale || 'en';
 
         // 查询产品
         const products = await strapi.entityService.findMany(
           "api::product.product",
           {
             fields: ["slug"],
+            locale: locale
           }
         );
         return {
@@ -299,7 +309,7 @@ export default factories.createCoreController(
     async getProductsByCategorySlug(ctx: Context) {
       try {
         const { slug } = ctx.params;
-        const { page = 1, pageSize = 12, sort = "createdAt:desc" } = ctx.query;
+        const { page = 1, pageSize = 12, sort = "createdAt:desc", locale = "en" } = ctx.query;
         if (!slug) {
           return ctx.badRequest("Category slug is required");
         }
@@ -321,6 +331,7 @@ export default factories.createCoreController(
               },
             },
             fields: ["id", "slug"],
+            locale: locale
           }
         );
 
@@ -343,6 +354,7 @@ export default factories.createCoreController(
             sort: sort,
             start: (Number(page) - 1) * Number(pageSize),
             limit: Number(pageSize),
+            locale: locale
           }
         );
         const total = await strapi.entityService.count("api::product.product", {
@@ -366,6 +378,7 @@ export default factories.createCoreController(
     async getProductMetaDataBySlug(ctx: Context) {
       try {
         const { slug } = ctx.params;
+        const locale = ctx.query.locale || 'en';
         if (!slug) {
           return ctx.badRequest("Category slug is required");
         }
@@ -384,6 +397,7 @@ export default factories.createCoreController(
               "code",
             ],
             populate: { featured_image: { fields: ["url"] } },
+            locale: locale
           }
         );
         return { data: products[0] };
@@ -394,7 +408,7 @@ export default factories.createCoreController(
   })
 );
 
-async function getAllSubCategorySlugs(slug: string): Promise<string[]> {
+async function getAllSubCategorySlugs(slug: string, locale: string): Promise<string[]> {
   const result: string[] = [slug];
 
   async function recurse(currentSlug: string) {
@@ -407,6 +421,7 @@ async function getAllSubCategorySlugs(slug: string): Promise<string[]> {
           },
         },
         fields: ["slug"],
+        locale: locale
       }
     );
 

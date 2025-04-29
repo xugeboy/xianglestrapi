@@ -20,6 +20,7 @@ export default factories.createCoreController(
       try {
         // 设置默认状态为已发布
         ctx.query.status = "published";
+        const locale = ctx.query.locale || 'en';
 
         const categories = await strapi.entityService.findMany(
           "api::product-category.product-category",
@@ -30,6 +31,7 @@ export default factories.createCoreController(
               children: { fields: ["id", "name", "slug"] },
               parent: { fields: ["id", "name", "slug"] },
             },
+            locale: locale
           }
         );
 
@@ -49,6 +51,7 @@ export default factories.createCoreController(
     async getCategoryDetailsBySlug(ctx: Context) {
       try {
         const { slug } = ctx.params;
+        const locale = ctx.query.locale || 'en';
         if (!slug) {
           return ctx.badRequest("Category slug is required");
         }
@@ -65,6 +68,7 @@ export default factories.createCoreController(
             populate: {
               featured_image: { fields: ["url"] },
             },
+            locale: locale
           }
         );
       } catch (error) {
@@ -80,6 +84,7 @@ export default factories.createCoreController(
     async getCategoryMetaDataBySlug(ctx: Context) {
       try {
         const { slug } = ctx.params;
+        const locale = ctx.query.locale || 'en';
         if (!slug) {
           return ctx.badRequest("Category slug is required");
         }
@@ -101,6 +106,7 @@ export default factories.createCoreController(
               "updatedAt",
             ],
             populate: { featured_image: { fields: ["url"] } },
+            locale: locale
           }
         );
 
@@ -120,6 +126,7 @@ export default factories.createCoreController(
       try {
         // 设置默认状态为已发布
         ctx.query.status = "published";
+        const locale = ctx.query.locale || 'en';
         const categories = await strapi.entityService.findMany(
           "api::product-category.product-category",
           {
@@ -128,6 +135,7 @@ export default factories.createCoreController(
             populate: {
               children: { fields: ["slug"] },
             },
+            locale: locale
           }
         );
         return {
@@ -147,10 +155,12 @@ export default factories.createCoreController(
       try {
         // 设置默认状态为已发布
         ctx.query.status = "published";
+        const locale = ctx.query.locale || 'en';
         const categories = await strapi.entityService.findMany(
           "api::product-category.product-category",
           {
             fields: ["slug"],
+            locale: locale
           }
         );
         return {
