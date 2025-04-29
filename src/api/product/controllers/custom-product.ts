@@ -24,7 +24,7 @@ export default factories.createCoreController(
         // 基础查询条件
         const baseQuery: any = {};
 
-        const allCategorySlugs = await getAllSubCategorySlugs(categorySlug);
+        const allCategorySlugs = await getAllSubCategorySlugs(categorySlug,locale);
         baseQuery.category = {
           slug: {
             $in: allCategorySlugs,
