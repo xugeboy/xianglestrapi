@@ -408,7 +408,7 @@ export default factories.createCoreController(
   })
 );
 
-async function getAllSubCategorySlugs(slug: string, locale: string): Promise<string[]> {
+async function getAllSubCategorySlugs(slug: string, locale: unknown): Promise<string[]> {
   const result: string[] = [slug];
 
   async function recurse(currentSlug: string) {
