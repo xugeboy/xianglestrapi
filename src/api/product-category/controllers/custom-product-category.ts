@@ -159,7 +159,7 @@ export default factories.createCoreController(
         const categories = await strapi.entityService.findMany(
           "api::product-category.product-category",
           {
-            fields: ["slug"],
+            fields: ["slug","updatedAt","publishedAt"],
             locale: locale
           }
         );

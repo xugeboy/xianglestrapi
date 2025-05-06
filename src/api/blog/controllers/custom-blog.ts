@@ -95,7 +95,7 @@ export default factories.createCoreController(
         ctx.query.status = "published";
         const locale = ctx.query.locale || 'en';
         const blogs = await strapi.entityService.findMany("api::blog.blog", {
-          fields: ["slug"],
+          fields: ["slug","updatedAt","publishedAt"],
           locale:locale
         });
         return {
