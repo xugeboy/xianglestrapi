@@ -57,5 +57,13 @@ export default {
           auth: false,
         },
     },
+    {
+      method: 'POST',
+      path: '/createProductFromJson',
+      handler: 'custom-product.createProductFromJson',
+      config: {
+        auth: false,
+      }
+    }
   ],
 }; 

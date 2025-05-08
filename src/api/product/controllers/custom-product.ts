@@ -405,6 +405,45 @@ export default factories.createCoreController(
         ctx.throw(500, error);
       }
     },
+    async createProductFromJson(ctx) {
+      try {
+        const body = ctx.request.body;
+    
+        if (!body || typeof body !== 'object') {
+          return ctx.badRequest('Invalid or empty JSON payload.');
+        }
+    
+        const { code, ...localizedFields } = body;
+    
+        if (!code) {
+          return ctx.badRequest('Missing required field: code');
+        }
+    
+        const locales = Object.keys(localizedFields);
+    
+        // Create localized entries per locale
+        const createdProductIds = [];
+        for (let i = 0; i < locales.length; i++) {
+          const locale = locales[i];
+          const localeData = localizedFields[locale];
+    
+          // On first iteration, create the base entry
+          const createdProduct = await strapi.db.query('api::product.product').create({
+            data: {
+              ...localeData,
+              code,
+              locale,
+            }
+          });
+          createdProductIds.push(createdProduct.id);
+        }
+    
+        ctx.send({ message: 'Products created successfully', ids: createdProductIds });
+      } catch (error) {
+        console.error('Error creating product:', error);
+        ctx.internalServerError('Error creating product');
+      }
+    }
   })
 );
 
