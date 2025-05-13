@@ -234,11 +234,13 @@ export default factories.createCoreController(
       const allLanguageSlugs: { [urlPrefix: string]: string } = {};
 
       if (mainProduct.slug) {
+        // @ts-ignore
         allLanguageSlugs[locale] = mainProduct.slug;
       }
 
-
+      // @ts-ignore
       if (mainProduct.localizations && Array.isArray(mainProduct.localizations)) {
+        // @ts-ignore
         mainProduct.localizations.forEach(localization => {
           if (localization.slug && localization.locale) {
             const urlPrefixForLocalization = mapStrapiLocaleToUrlPrefix(localization.locale);
