@@ -128,7 +128,10 @@ export default factories.createCoreController(
             "createdAt",
           ],
           locale:locale,
-          populate: { cover_image: { fields: ["url"] } },
+          populate: { cover_image: { fields: ["url"] },
+          localizations: {
+            fields: ["slug", "locale"]
+          } },
         });
 
         const mainProduct = blogs[0];

@@ -105,7 +105,10 @@ export default factories.createCoreController(
               "publishedAt",
               "updatedAt",
             ],
-            populate: { featured_image: { fields: ["url"] } },
+            populate: { featured_image: { fields: ["url"] },
+            localizations: {
+              fields: ["slug", "locale"]
+            } },
             locale: locale
           }
         );
