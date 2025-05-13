@@ -231,7 +231,7 @@ export default factories.createCoreController(
             data: correctSlugForTargetLocale,
           };
         } else {
-          return ctx.notFound(`Slug for locale prefix '${targetLocalePrefix}' not found for this product.`);
+          return ctx.notFound(`Slug for locale prefix '${targetLocale}' not found for this product.`);
         }
   
       } catch (error: any) {
