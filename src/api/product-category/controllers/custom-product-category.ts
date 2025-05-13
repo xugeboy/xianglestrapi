@@ -199,6 +199,59 @@ export default factories.createCoreController(
         ctx.throw(500, error);
       }
     },
+    async getCorrectSlugForLocale(ctx: any) {
+      try {
+        const { slug: inputSlug } = ctx.params as { slug: string }; 
+        const targetLocale = ctx.query.targetLocale;
+        
+        if (!inputSlug) {
+          return ctx.badRequest("Input slug is required");
+        }
+  
+        const productsWithAnySlug = await strapi.entityService.findMany("api::product-category.product-category", {
+          filters: { slug: inputSlug },
+          fields: ["id", "locale", "slug"],
+          populate: { 
+            localizations: { 
+              fields: ['id', 'locale', 'slug'] 
+            } 
+          },
+        });
+  
+        if (!productsWithAnySlug || productsWithAnySlug.length === 0) {
+          return ctx.notFound("Entity not found with the given slug in any language.");
+        }
+        
+        const anchorProduct = productsWithAnySlug[0];
+
+        let correctSlugForTargetLocale: string | undefined = undefined;
+  
+        if (anchorProduct.locale === targetLocale) {
+          correctSlugForTargetLocale = anchorProduct.slug;
+          //@ts-ignore
+        } else if (anchorProduct.localizations && Array.isArray(anchorProduct.localizations)) {
+          //@ts-ignore
+          const targetLocalization = anchorProduct.localizations.find(
+            (loc: any) => loc.locale === targetLocale
+          );
+          if (targetLocalization && targetLocalization.slug) {
+            correctSlugForTargetLocale = targetLocalization.slug;
+          }
+        }
+  
+        if (correctSlugForTargetLocale) {
+          return {
+            data: correctSlugForTargetLocale,
+          };
+        } else {
+          return ctx.notFound(`Slug for locale prefix '${targetLocale}' not found for this product.`);
+        }
+  
+      } catch (error: any) {
+        console.error("Error in getCorrectSlugForLocale:", error);
+        return ctx.internalServerError(error.message || "Internal server error");
+      }
+    },
   })
 );
 function mapStrapiLocaleToUrlPrefix(strapiLocale: string): string | undefined {
@@ -212,4 +265,21 @@ function mapStrapiLocaleToUrlPrefix(strapiLocale: string): string | undefined {
     "es-ES": "es",
   };
   return mapping[strapiLocale];
+}
+function mapUrlPrefixToStrapiLocale(urlPrefix: string | undefined | null): string | undefined {
+  if (!urlPrefix) {
+    return undefined;
+  }
+
+  const mapping: { [key: string]: string } = {
+    "en": "en",     
+    "au": "en-AU",
+    "ca": "en-CA",
+    "uk": "en-GB",
+    "de": "de-DE",
+    "fr": "fr-FR", 
+    "es": "es-ES",
+  };
+
+  return mapping[urlPrefix.toLowerCase()] || urlPrefix;
 }

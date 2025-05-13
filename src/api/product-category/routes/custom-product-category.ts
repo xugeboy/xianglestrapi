@@ -34,6 +34,13 @@ export default {
           auth: false,
         },
     },{
+      method: 'GET',
+      path: '/getCorrectCategorySlugForLocale',
+      handler: 'custom-product-category.getCorrectCategorySlugForLocale',
+      config: {
+        auth: false,
+      },
+  },{
         method: 'GET',
         path: '/getAllCategorySlug',
         handler: 'custom-product-category.getAllCategorySlug',

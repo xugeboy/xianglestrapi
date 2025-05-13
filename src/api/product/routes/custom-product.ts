@@ -57,6 +57,14 @@ export default {
           auth: false,
         },
     },
+    ,{
+      method: 'GET',
+      path: '/getCorrectProductSlugForLocale/:slug',
+      handler: 'custom-product.getCorrectProductSlugForLocale',
+      config: {
+        auth: false,
+      },
+  },
     {
       method: 'POST',
       path: '/createProductFromJson',

@@ -38,6 +38,14 @@ export default {
     },
     {
       method: "GET",
+      path: "/getCorrectBlogSlugForLocale/:slug",
+      handler: "custom-blog.getCorrectBlogSlugForLocale",
+      config: {
+        auth: false,
+      },
+    },
+    {
+      method: "GET",
       path: "/getLatestArticles",
       handler: "custom-blog.getLatestArticles",
       config: {
