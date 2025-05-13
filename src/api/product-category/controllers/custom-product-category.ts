@@ -199,7 +199,7 @@ export default factories.createCoreController(
         ctx.throw(500, error);
       }
     },
-    async getCorrectSlugForLocale(ctx: any) {
+    async getCorrectCategorySlugForLocale(ctx: any) {
       try {
         const { slug: inputSlug } = ctx.params as { slug: string }; 
         const targetLocale = ctx.query.targetLocale;
