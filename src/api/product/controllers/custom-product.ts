@@ -218,6 +218,9 @@ export default factories.createCoreController(
                   Image: { fields: ["url"] },
                 },
               },
+              localizations: {
+                fields: ["slug", "locale"]
+              }
             },
             locale: locale
           }
@@ -227,7 +230,31 @@ export default factories.createCoreController(
           return ctx.notFound("Product not found");
         }
 
-        return { data: products[0] };
+      const mainProduct = products[0];
+      const allLanguageSlugs: { [urlPrefix: string]: string } = {};
+
+      if (mainProduct.slug) {
+        allLanguageSlugs[locale] = mainProduct.slug;
+      }
+
+
+      if (mainProduct.localizations && Array.isArray(mainProduct.localizations)) {
+        mainProduct.localizations.forEach(localization => {
+          if (localization.slug && localization.locale) {
+            const urlPrefixForLocalization = mapStrapiLocaleToUrlPrefix(localization.locale);
+            if (urlPrefixForLocalization) {
+              allLanguageSlugs[urlPrefixForLocalization] = localization.slug;
+            }
+          }
+        });
+      }
+
+      const responseData = {
+        ...mainProduct,
+        allLanguageSlugs: allLanguageSlugs,
+      };
+
+        return { data: responseData };
       } catch (error) {
         ctx.throw(500, error);
       }
@@ -473,4 +500,17 @@ async function getAllSubCategorySlugs(slug: string, locale: unknown): Promise<st
   await recurse(slug);
 
   return result;
+}
+
+function mapStrapiLocaleToUrlPrefix(strapiLocale: string): string | undefined {
+  const mapping: { [strapiCode: string]: string } = {
+    "en": "en",
+    "en-AU": "au",      
+    "en-CA": "ca",
+    "en-GB": "uk",
+    "de-DE": "de",      
+    "fr-FR": "fr",
+    "es-ES": "es",
+  };
+  return mapping[strapiLocale];
 }
