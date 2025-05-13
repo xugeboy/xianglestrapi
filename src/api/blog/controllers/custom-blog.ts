@@ -131,7 +131,33 @@ export default factories.createCoreController(
           populate: { cover_image: { fields: ["url"] } },
         });
 
-        return { data: blogs[0] };
+        const mainProduct = blogs[0];
+        const allLanguageSlugs: { [urlPrefix: string]: string } = {};
+  
+        if (mainProduct.slug) {
+          // @ts-ignore
+          allLanguageSlugs[locale] = mainProduct.slug;
+        }
+  
+        // @ts-ignore
+        if (mainProduct.localizations && Array.isArray(mainProduct.localizations)) {
+          // @ts-ignore
+          mainProduct.localizations.forEach(localization => {
+            if (localization.slug && localization.locale) {
+              const urlPrefixForLocalization = mapStrapiLocaleToUrlPrefix(localization.locale);
+              if (urlPrefixForLocalization) {
+                allLanguageSlugs[urlPrefixForLocalization] = localization.slug;
+              }
+            }
+          });
+        }
+  
+        const responseData = {
+          ...mainProduct,
+          allLanguageSlugs: allLanguageSlugs,
+        };
+
+        return { data: responseData };
       } catch (error) {
         ctx.throw(500, error);
       }
@@ -159,3 +185,15 @@ export default factories.createCoreController(
     },
   })
 );
+function mapStrapiLocaleToUrlPrefix(strapiLocale: string): string | undefined {
+  const mapping: { [strapiCode: string]: string } = {
+    "en": "en",
+    "en-AU": "au",      
+    "en-CA": "ca",
+    "en-GB": "uk",
+    "de-DE": "de",      
+    "fr-FR": "fr",
+    "es-ES": "es",
+  };
+  return mapping[strapiLocale];
+}
