@@ -33,16 +33,11 @@ export default factories.createCoreController(
 
         // 定义要分组的属性字段
         const attributeFields = [
-          "length",
           "width",
-          "material",
-          "finish",
           "grade",
           "working_load_limit",
           "assembly_break_strength",
-          "webbing_break_strength",
           "end_fitting",
-          "ratchet_handle",
         ];
 
         // 查询所有符合条件的产品
