@@ -35,7 +35,7 @@ export default {
         },
     },{
       method: 'GET',
-      path: '/getCorrectCategorySlugForLocale',
+      path: '/getCorrectCategorySlugForLocale/:slug',
       handler: 'custom-product-category.getCorrectCategorySlugForLocale',
       config: {
         auth: false,
