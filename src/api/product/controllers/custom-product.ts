@@ -260,6 +260,7 @@ export default factories.createCoreController(
       try {
         const { slug: inputSlug } = ctx.params as { slug: string }; 
         const locale = ctx.query.locale;
+        const previousLocale = ctx.query.previousLocale;
         
         if (!inputSlug) {
           return ctx.badRequest("Input slug is required");
@@ -273,6 +274,7 @@ export default factories.createCoreController(
               fields: ['id', 'locale', 'slug'] 
             } 
           },
+          locale: previousLocale
         });
   
         if (!productsWithAnySlug || productsWithAnySlug.length === 0) {
