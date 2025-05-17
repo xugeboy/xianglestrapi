@@ -192,6 +192,8 @@ export default factories.createCoreController(
               "finish",
               "product_weight",
               "seo_title",
+              "compliance",
+              "elongation_at_lc",
               "seo_description",
               "publishedAt",
               "updatedAt",
