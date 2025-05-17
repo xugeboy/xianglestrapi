@@ -558,29 +558,11 @@ async function getAllSubCategorySlugs(slug: string, locale: unknown): Promise<st
 function mapStrapiLocaleToUrlPrefix(strapiLocale: string): string | undefined {
   const mapping: { [strapiCode: string]: string } = {
     "en": "en",
-    "en-AU": "au",      
-    "en-CA": "ca",
+    "en-AU": "au",
     "en-GB": "uk",
     "de-DE": "de",      
     "fr-FR": "fr",
     "es-ES": "es",
   };
   return mapping[strapiLocale];
-}
-function mapUrlPrefixToStrapiLocale(urlPrefix: string | undefined | null): string | undefined {
-  if (!urlPrefix) {
-    return undefined;
-  }
-
-  const mapping: { [key: string]: string } = {
-    "en": "en",     
-    "au": "en-AU",
-    "ca": "en-CA",
-    "uk": "en-GB",
-    "de": "de-DE",
-    "fr": "fr-FR", 
-    "es": "es-ES",
-  };
-
-  return mapping[urlPrefix.toLowerCase()] || urlPrefix;
 }
