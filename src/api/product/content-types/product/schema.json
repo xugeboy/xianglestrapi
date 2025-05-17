@@ -245,6 +245,12 @@
           "localized": true
         }
       }
+    },
+    "compliance": {
+      "type": "string"
+    },
+    "elongation_at_lc": {
+      "type": "string"
     }
   }
 }
