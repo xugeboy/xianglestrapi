@@ -643,11 +643,21 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
           localized: false;
         };
       }>;
-    compliance: Schema.Attribute.String;
+    compliance: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    elongation_at_lc: Schema.Attribute.String;
+    elongation_at_lc: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     end_fitting: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
