@@ -208,7 +208,11 @@ export default factories.createCoreController(
                   featured_image: { fields: ["url"] },
                 },
               },
-              related_blogs: { fields: ["id", "title", "slug"] },
+              related_blogs: { fields: ["id", "title", "slug"],
+                populate: {
+                  cover_image: { fields: ["url"] },
+                },
+              },
               alternating_content: {
                 fields: ["title", "Text"],
                 populate: {
