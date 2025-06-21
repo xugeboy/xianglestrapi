@@ -119,7 +119,9 @@ export default factories.createCoreController(
           {
             fields: ["id", "name", "slug", "about", "code"],
             filters,
-            populate: ["category", "featured_image"],
+            populate: {
+              featured_image: { fields: ["url"] }
+            },
             sort: { createdAt: "desc" },
             start,
             limit,
