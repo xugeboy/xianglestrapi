@@ -760,6 +760,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
         };
       }>;
     slug: Schema.Attribute.UID<'name'>;
+    strap_colors: Schema.Attribute.JSON;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

@@ -261,6 +261,9 @@
           "localized": true
         }
       }
+    },
+    "strap_colors": {
+      "type": "json"
     }
   }
 }
