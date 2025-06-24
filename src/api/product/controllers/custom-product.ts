@@ -130,8 +130,11 @@ export default factories.createCoreController(
         );
 
         // 获取符合条件的总数
-        const total = await strapi.entityService.count("api::product.product", {
-          filters,
+        const total = await strapi.documents("api::product.product").count({
+          filters: {
+            ...filters,
+            locale: locale,
+          },
         });
 
         return ctx.send({
@@ -269,47 +272,16 @@ export default factories.createCoreController(
       try {
         const { slug: inputSlug } = ctx.params as { slug: string }; 
         const locale = ctx.query.locale;
-        const previousLocale = ctx.query.previousLocale;
         
         if (!inputSlug) {
           return ctx.badRequest("Input slug is required");
         }
   
-        const productsWithAnySlug = await strapi.entityService.findMany("api::product.product", {
-          filters: { slug: inputSlug },
-          fields: ["id", "locale", "slug"],
-          populate: { 
-            localizations: { 
-              fields: ['id', 'locale', 'slug'] 
-            } 
-          },
-          locale: previousLocale
-        });
+        const allCategorySlugs = await getAllSubCategorySlugs(inputSlug,locale);
   
-        if (!productsWithAnySlug || productsWithAnySlug.length === 0) {
-          return ctx.notFound("Entity not found with the given slug in any language.");
-        }
-        
-        const anchorProduct = productsWithAnySlug[0];
-  
-        let correctSlugForTargetLocale: string | undefined = undefined;
-  
-        if (anchorProduct.locale === locale) {
-          correctSlugForTargetLocale = anchorProduct.slug;
-          //@ts-ignore
-        } else if (anchorProduct.localizations && Array.isArray(anchorProduct.localizations)) {
-          //@ts-ignore
-          const targetLocalization = anchorProduct.localizations.find(
-            (loc: any) => loc.locale === locale
-          );
-          if (targetLocalization && targetLocalization.slug) {
-            correctSlugForTargetLocale = targetLocalization.slug;
-          }
-        }
-  
-        if (correctSlugForTargetLocale) {
+        if (allCategorySlugs) {
           return {
-            data: correctSlugForTargetLocale,
+            data: allCategorySlugs,
           };
         } else {
           return ctx.notFound(`Slug for locale prefix '${locale}' not found for this product.`);
