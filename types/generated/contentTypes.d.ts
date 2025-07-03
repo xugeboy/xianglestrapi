@@ -460,6 +460,12 @@ export interface ApiFaqFaq extends Struct.CollectionTypeSchema {
     Answer: Schema.Attribute.RichText &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
+          localized: false;
+        };
+      }>;
+    BlockAnswer: Schema.Attribute.Blocks &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
           localized: true;
         };
       }>;

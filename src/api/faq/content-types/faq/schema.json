@@ -28,6 +28,14 @@
       "type": "richtext",
       "pluginOptions": {
         "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "BlockAnswer": {
+      "type": "blocks",
+      "pluginOptions": {
+        "i18n": {
           "localized": true
         }
       }
