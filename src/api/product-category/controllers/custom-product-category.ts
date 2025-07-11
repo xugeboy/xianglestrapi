@@ -119,7 +119,7 @@ export default factories.createCoreController(
   
         if (mainProduct.slug) {
           // @ts-ignore
-          allLanguageSlugs[locale] = mainProduct.slug;
+          allLanguageSlugs[mapStrapiLocaleToUrlPrefix(locale)] = mainProduct.slug;
         }
   
         // @ts-ignore
