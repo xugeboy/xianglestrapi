@@ -279,9 +279,7 @@ export default factories.createCoreController(
         }
 
         // @ts-ignore
-        if (
-          mainProduct.localizations &&
-          Array.isArray(mainProduct.localizations)
+        if (mainProduct.localizations && Array.isArray(mainProduct.localizations)
         ) {
           // @ts-ignore
           mainProduct.localizations.forEach((localization) => {
