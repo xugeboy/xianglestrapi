@@ -658,6 +658,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    customizable: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     elongation_at_lc: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {

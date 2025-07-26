@@ -16,7 +16,7 @@ export default factories.createCoreController(
     async getAttributeFiltersByCategorySlug(ctx: Context) {
       try {
         const { categorySlug } = ctx.params;
-        const locale = ctx.query.locale || 'en';
+        const locale = ctx.query.locale || "en";
 
         // 设置默认状态为已发布
         ctx.query.status = "published";
@@ -24,7 +24,10 @@ export default factories.createCoreController(
         // 基础查询条件
         const baseQuery: any = {};
 
-        const allCategorySlugs = await getAllSubCategorySlugs(categorySlug,locale);
+        const allCategorySlugs = await getAllSubCategorySlugs(
+          categorySlug,
+          locale
+        );
         baseQuery.category = {
           slug: {
             $in: allCategorySlugs,
@@ -38,13 +41,17 @@ export default factories.createCoreController(
           "assembly_break_strength",
           "end_fitting",
         ];
-
+        // 定义需要特殊数值排序的字段
+        const numericSortFields = [
+          "working_load_limit",
+          "assembly_break_strength",
+        ];
         // 查询所有符合条件的产品
         const products = await strapi.entityService.findMany(
           "api::product.product",
           {
             filters: baseQuery,
-            locale: locale
+            locale: locale,
           }
         );
 
@@ -64,7 +71,27 @@ export default factories.createCoreController(
 
           // 只保留有值的属性字段
           if (Object.keys(values).length > 0) {
-            attributeFilters[field] = values;
+            // 如果是需要数值排序的字段
+            if (numericSortFields.includes(field)) {
+              // 1. 获取所有键 (e.g., ["110 lbs", "50 lbs"])
+              const sortedKeys = Object.keys(values).sort((a, b) => {
+                // 2. 从字符串中提取数字进行比较
+                const numA = parseInt(a, 10);
+                const numB = parseInt(b, 10);
+                return numA - numB;
+              });
+
+              // 3. 创建一个新对象以保证顺序
+              const sortedValues: Record<string, number> = {};
+              sortedKeys.forEach((key) => {
+                sortedValues[key] = values[key];
+              });
+
+              attributeFilters[field] = sortedValues;
+            } else {
+              // 对于其他字段，保持原有逻辑
+              attributeFilters[field] = values;
+            }
           }
         });
 
@@ -87,14 +114,17 @@ export default factories.createCoreController(
           page = 1,
           pageSize = 10,
           attributeFilters = {}, // 允许空对象
-          locale = 'en'
+          locale = "en",
         } = ctx.request.body;
         ctx.query.status = "published";
 
         // 构建查询条件
         const filters: any = {};
 
-        const allCategorySlugs = await getAllSubCategorySlugs(categorySlug,locale);
+        const allCategorySlugs = await getAllSubCategorySlugs(
+          categorySlug,
+          locale
+        );
         filters.category = {
           slug: {
             $in: allCategorySlugs,
@@ -116,15 +146,15 @@ export default factories.createCoreController(
         const products = await strapi.entityService.findMany(
           "api::product.product",
           {
-            fields: ["id", "name", "slug", "about", "code","strap_colors"],
+            fields: ["id", "name", "slug", "about", "code", "customizable"],
             filters,
             populate: {
-              featured_image: { fields: ["url"] }
+              featured_image: { fields: ["url"] },
             },
             sort: { createdAt: "desc" },
             start,
             limit,
-            locale: locale
+            locale: locale,
           }
         );
 
@@ -160,7 +190,7 @@ export default factories.createCoreController(
     async getProductBySlug(ctx: Context) {
       try {
         const { slug } = ctx.params;
-        const locale = ctx.query.locale || 'en';
+        const locale = ctx.query.locale || "en";
         if (!slug) {
           return ctx.badRequest("Slug is required");
         }
@@ -201,11 +231,12 @@ export default factories.createCoreController(
               "seo_description",
               "publishedAt",
               "updatedAt",
-              "strap_colors"
+              "customizable",
+              "strap_colors",
             ],
             populate: {
               featured_image: { fields: ["url"] },
-              gallery: { fields: ["url","name","width","height"] },
+              gallery: { fields: ["url", "name", "width", "height"] },
               category: { fields: ["id", "name", "slug"] },
               related_products: {
                 fields: ["id", "name", "slug", "code"],
@@ -213,7 +244,8 @@ export default factories.createCoreController(
                   featured_image: { fields: ["url"] },
                 },
               },
-              related_blogs: { fields: ["id", "title", "slug"],
+              related_blogs: {
+                fields: ["id", "title", "slug"],
                 populate: {
                   cover_image: { fields: ["url"] },
                 },
@@ -225,10 +257,10 @@ export default factories.createCoreController(
                 },
               },
               localizations: {
-                fields: ["slug", "locale"]
-              }
+                fields: ["slug", "locale"],
+              },
             },
-            locale: locale
+            locale: locale,
           }
         );
 
@@ -236,31 +268,35 @@ export default factories.createCoreController(
           return ctx.notFound("Product not found");
         }
 
-      const mainProduct = products[0];
-      const allLanguageSlugs: { [urlPrefix: string]: string } = {};
+        const mainProduct = products[0];
+        const allLanguageSlugs: { [urlPrefix: string]: string } = {};
 
-      if (mainProduct.slug) {
-        // @ts-ignore
-        allLanguageSlugs[mapStrapiLocaleToUrlPrefix(locale)] = mainProduct.slug;
-      }
+        if (mainProduct.slug) {
+          // @ts-ignore
+          allLanguageSlugs[mapStrapiLocaleToUrlPrefix(locale)] =
+            mainProduct.slug;
+        }
 
-      // @ts-ignore
-      if (mainProduct.localizations && Array.isArray(mainProduct.localizations)) {
         // @ts-ignore
-        mainProduct.localizations.forEach(localization => {
-          if (localization.slug && localization.locale) {
-            const urlPrefixForLocalization = mapStrapiLocaleToUrlPrefix(localization.locale);
-            if (urlPrefixForLocalization) {
-              allLanguageSlugs[urlPrefixForLocalization] = localization.slug;
+        if (mainProduct.localizations && Array.isArray(mainProduct.localizations)
+        ) {
+          // @ts-ignore
+          mainProduct.localizations.forEach((localization) => {
+            if (localization.slug && localization.locale) {
+              const urlPrefixForLocalization = mapStrapiLocaleToUrlPrefix(
+                localization.locale
+              );
+              if (urlPrefixForLocalization) {
+                allLanguageSlugs[urlPrefixForLocalization] = localization.slug;
+              }
             }
-          }
-        });
-      }
+          });
+        }
 
-      const responseData = {
-        ...mainProduct,
-        allLanguageSlugs: allLanguageSlugs,
-      };
+        const responseData = {
+          ...mainProduct,
+          allLanguageSlugs: allLanguageSlugs,
+        };
 
         return { data: responseData };
       } catch (error) {
@@ -269,26 +305,32 @@ export default factories.createCoreController(
     },
     async getCorrectProductSlugForLocale(ctx: any) {
       try {
-        const { slug: inputSlug } = ctx.params as { slug: string }; 
+        const { slug: inputSlug } = ctx.params as { slug: string };
         const locale = ctx.query.locale;
-        
+
         if (!inputSlug) {
           return ctx.badRequest("Input slug is required");
         }
-  
-        const allCategorySlugs = await getAllSubCategorySlugs(inputSlug,locale);
-  
+
+        const allCategorySlugs = await getAllSubCategorySlugs(
+          inputSlug,
+          locale
+        );
+
         if (allCategorySlugs) {
           return {
             data: allCategorySlugs,
           };
         } else {
-          return ctx.notFound(`Slug for locale prefix '${locale}' not found for this product.`);
+          return ctx.notFound(
+            `Slug for locale prefix '${locale}' not found for this product.`
+          );
         }
-  
       } catch (error: any) {
         console.error("Error in getCorrectSlugForLocale:", error);
-        return ctx.internalServerError(error.message || "Internal server error");
+        return ctx.internalServerError(
+          error.message || "Internal server error"
+        );
       }
     },
     /**
@@ -299,7 +341,7 @@ export default factories.createCoreController(
     async searchProducts(ctx: Context) {
       try {
         const { query } = ctx.params;
-        const locale = ctx.query.locale || 'en';
+        const locale = ctx.query.locale || "en";
         if (!query || typeof query !== "string") {
           return ctx.badRequest("Search query is required");
         }
@@ -322,7 +364,7 @@ export default factories.createCoreController(
               gallery: { fields: ["url"] },
               category: { fields: ["id", "name", "slug"] },
             },
-            locale: locale
+            locale: locale,
           }
         );
 
@@ -342,14 +384,14 @@ export default factories.createCoreController(
       try {
         // 设置默认状态为已发布
         ctx.query.status = "published";
-        const locale = ctx.query.locale || 'en';
+        const locale = ctx.query.locale || "en";
 
         // 查询产品
         const products = await strapi.entityService.findMany(
           "api::product.product",
           {
-            fields: ["slug","updatedAt","publishedAt"],
-            locale: locale
+            fields: ["slug", "updatedAt", "publishedAt"],
+            locale: locale,
           }
         );
         return {
@@ -367,7 +409,12 @@ export default factories.createCoreController(
     async getProductsByCategorySlug(ctx: Context) {
       try {
         const { slug } = ctx.params;
-        const { page = 1, pageSize = 12, sort = "createdAt:desc", locale = "en" } = ctx.query;
+        const {
+          page = 1,
+          pageSize = 12,
+          sort = "createdAt:desc",
+          locale = "en",
+        } = ctx.query;
         if (!slug) {
           return ctx.badRequest("Category slug is required");
         }
@@ -389,7 +436,7 @@ export default factories.createCoreController(
               },
             },
             fields: ["id", "slug"],
-            locale: locale
+            locale: locale,
           }
         );
 
@@ -412,7 +459,7 @@ export default factories.createCoreController(
             sort: sort,
             start: (Number(page) - 1) * Number(pageSize),
             limit: Number(pageSize),
-            locale: locale
+            locale: locale,
           }
         );
         const total = await strapi.entityService.count("api::product.product", {
@@ -436,7 +483,7 @@ export default factories.createCoreController(
     async getProductMetaDataBySlug(ctx: Context) {
       try {
         const { slug } = ctx.params;
-        const locale = ctx.query.locale || 'en';
+        const locale = ctx.query.locale || "en";
         if (!slug) {
           return ctx.badRequest("Category slug is required");
         }
@@ -449,13 +496,9 @@ export default factories.createCoreController(
             filters: {
               slug: slug,
             },
-            fields: [
-              "slug",
-              "name",
-              "code",
-            ],
+            fields: ["slug", "name", "code"],
             populate: { featured_image: { fields: ["url"] } },
-            locale: locale
+            locale: locale,
           }
         );
         return { data: products[0] };
@@ -466,46 +509,54 @@ export default factories.createCoreController(
     async createProductFromJson(ctx) {
       try {
         const body = ctx.request.body;
-    
-        if (!body || typeof body !== 'object') {
-          return ctx.badRequest('Invalid or empty JSON payload.');
+
+        if (!body || typeof body !== "object") {
+          return ctx.badRequest("Invalid or empty JSON payload.");
         }
-    
+
         const { code, ...localizedFields } = body;
-    
+
         if (!code) {
-          return ctx.badRequest('Missing required field: code');
+          return ctx.badRequest("Missing required field: code");
         }
-    
+
         const locales = Object.keys(localizedFields);
-    
+
         // Create localized entries per locale
         const createdProductIds = [];
         for (let i = 0; i < locales.length; i++) {
           const locale = locales[i];
           const localeData = localizedFields[locale];
-    
+
           // On first iteration, create the base entry
-          const createdProduct = await strapi.db.query('api::product.product').create({
-            data: {
-              ...localeData,
-              code,
-              locale,
-            }
-          });
+          const createdProduct = await strapi.db
+            .query("api::product.product")
+            .create({
+              data: {
+                ...localeData,
+                code,
+                locale,
+              },
+            });
           createdProductIds.push(createdProduct.id);
         }
-    
-        ctx.send({ message: 'Products created successfully', ids: createdProductIds });
+
+        ctx.send({
+          message: "Products created successfully",
+          ids: createdProductIds,
+        });
       } catch (error) {
-        console.error('Error creating product:', error);
-        ctx.internalServerError('Error creating product');
+        console.error("Error creating product:", error);
+        ctx.internalServerError("Error creating product");
       }
-    }
+    },
   })
 );
 
-async function getAllSubCategorySlugs(slug: string, locale: unknown): Promise<string[]> {
+async function getAllSubCategorySlugs(
+  slug: string,
+  locale: unknown
+): Promise<string[]> {
   const result: string[] = [slug];
 
   async function recurse(currentSlug: string) {
@@ -518,7 +569,7 @@ async function getAllSubCategorySlugs(slug: string, locale: unknown): Promise<st
           },
         },
         fields: ["slug"],
-        locale: locale
+        locale: locale,
       }
     );
 
@@ -535,10 +586,10 @@ async function getAllSubCategorySlugs(slug: string, locale: unknown): Promise<st
 
 function mapStrapiLocaleToUrlPrefix(strapiLocale: string): string | undefined {
   const mapping: { [strapiCode: string]: string } = {
-    "en": "en",
+    en: "en",
     "en-AU": "au",
     "en-GB": "uk",
-    "de-DE": "de",      
+    "de-DE": "de",
     "fr-FR": "fr",
     "es-ES": "es",
   };

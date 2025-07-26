@@ -264,6 +264,10 @@
     },
     "strap_colors": {
       "type": "json"
+    },
+    "customizable": {
+      "type": "boolean",
+      "default": false
     }
   }
 }
