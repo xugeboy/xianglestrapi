@@ -35,7 +35,6 @@ export default factories.createCoreController(
         const attributeFields = [
           "width",
           "grade",
-          "working_load_limit",
           "assembly_break_strength",
           "end_fitting",
         ];
