@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "collectionName": "show_cases",
+  "info": {
+    "singularName": "show-case",
+    "pluralName": "show-cases",
+    "displayName": "ShowCase"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "image": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    },
+    "description": {
+      "type": "text",
+      "required": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}
