@@ -31,6 +31,7 @@ export default factories.createCoreController(
             fields: ["id","description"],
             populate: {
               image: { fields: ["url","alternativeText"] },
+              gallery: { fields: ["url","alternativeText"] },
             },
             sort: { createdAt: "desc" },
             start,
