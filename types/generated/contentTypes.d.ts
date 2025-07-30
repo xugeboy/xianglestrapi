@@ -807,6 +807,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
 export interface ApiShowCaseShowCase extends Struct.CollectionTypeSchema {
   collectionName: 'show_cases';
   info: {
+    description: '';
     displayName: 'ShowCase';
     pluralName: 'show-cases';
     singularName: 'show-case';
@@ -829,6 +830,10 @@ export interface ApiShowCaseShowCase extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    gallery: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
     image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<
