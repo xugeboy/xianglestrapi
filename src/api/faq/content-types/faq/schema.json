@@ -24,14 +24,6 @@
         }
       }
     },
-    "Answer": {
-      "type": "richtext",
-      "pluginOptions": {
-        "i18n": {
-          "localized": false
-        }
-      }
-    },
     "BlockAnswer": {
       "type": "blocks",
       "pluginOptions": {
@@ -39,6 +31,21 @@
           "localized": true
         }
       }
+    },
+    "title": {
+      "type": "string"
+    },
+    "isGobal": {
+      "type": "boolean"
+    },
+    "product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product",
+      "inversedBy": "faqs"
+    },
+    "sortOrder": {
+      "type": "integer"
     }
   }
 }
