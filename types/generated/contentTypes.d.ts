@@ -478,6 +478,7 @@ export interface ApiFaqFaq extends Struct.CollectionTypeSchema {
         };
       }>;
     sortOrder: Schema.Attribute.Integer;
+    TextAnswer: Schema.Attribute.Text;
     title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
