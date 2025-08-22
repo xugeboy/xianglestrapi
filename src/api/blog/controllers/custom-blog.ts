@@ -81,7 +81,7 @@ export default factories.createCoreController(
                 featured_image: { fields: ["url"] },
               },
             },
-            blogs: { fields: ["title", "slug"] },
+            blogs: { fields: ["title", "slug"] }
           },
           locale:locale
         });
