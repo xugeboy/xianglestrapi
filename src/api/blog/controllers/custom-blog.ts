@@ -75,6 +75,12 @@ export default factories.createCoreController(
           ],
           populate: {
             cover_image: { fields: ["url"] },
+            products:{
+              fields: ["id", "name", "slug", "code"],
+              populate: {
+                featured_image: { fields: ["url"] },
+              },
+            },
             blogs: { fields: ["title", "slug"] },
           },
           locale:locale
