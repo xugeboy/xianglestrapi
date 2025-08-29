@@ -93,6 +93,33 @@
       "relation": "manyToOne",
       "target": "api::blog.blog",
       "inversedBy": "blogs"
+    },
+    "keywords": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "required": true
+    },
+    "articleSection": {
+      "type": "enumeration",
+      "enum": [
+        "How-To & Tutorials",
+        "Product Guides",
+        "Safety & Compliance",
+        "Industry Insights",
+        "New Products",
+        "Applications & Case Studies"
+      ],
+      "default": "Product Guides"
+    },
+    "faqs": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::faq.faq",
+      "mappedBy": "blog"
     }
   }
 }

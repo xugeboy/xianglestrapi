@@ -386,6 +386,17 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
     };
   };
   attributes: {
+    articleSection: Schema.Attribute.Enumeration<
+      [
+        'How-To & Tutorials',
+        'Product Guides',
+        'Safety & Compliance',
+        'Industry Insights',
+        'New Products',
+        'Applications & Case Studies',
+      ]
+    > &
+      Schema.Attribute.DefaultTo<'Product Guides'>;
     blog: Schema.Attribute.Relation<'manyToOne', 'api::blog.blog'>;
     blogs: Schema.Attribute.Relation<'oneToMany', 'api::blog.blog'>;
     content: Schema.Attribute.Blocks &
@@ -406,6 +417,14 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     excerpt: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    faqs: Schema.Attribute.Relation<'oneToMany', 'api::faq.faq'>;
+    keywords: Schema.Attribute.String &
+      Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -463,6 +482,7 @@ export interface ApiFaqFaq extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    blog: Schema.Attribute.Relation<'manyToOne', 'api::blog.blog'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

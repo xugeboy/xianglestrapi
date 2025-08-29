@@ -49,6 +49,12 @@
     },
     "TextAnswer": {
       "type": "text"
+    },
+    "blog": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::blog.blog",
+      "inversedBy": "faqs"
     }
   }
 }
