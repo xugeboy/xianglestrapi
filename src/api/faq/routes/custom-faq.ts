@@ -20,6 +20,14 @@ export default {
         auth: false,
       },
     },
+    {
+      method: "GET",
+      path: "/getFaqsByBlogSlug/:slug",
+      handler: "custom-faq.getFaqsByBlogSlug",
+      config: {
+        auth: false,
+      },
+    },
   ],
 };
 

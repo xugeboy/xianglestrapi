@@ -61,6 +61,38 @@ export default factories.createCoreController("api::faq.faq", ({ strapi }) => ({
       ctx.throw(500, error as any);
     }
   },
+
+  /**
+   * 根据博客 slug 获取该博客关联的 FAQ（isGobal = false 且关联到该博客）
+   */
+  async getFaqsByBlogSlug(ctx: Context) {
+    try {
+      const { slug } = ctx.params as { slug: string };
+      const locale = (ctx.query.locale as string) || "en";
+      if (!slug) {
+        return ctx.badRequest("Blog slug is required");
+      }
+
+      // 只返回已发布内容
+      // @ts-ignore
+      ctx.query.status = "published";
+
+      const faqs = await strapi.entityService.findMany("api::faq.faq", {
+        filters: {
+          isGobal: false,
+          blog: {
+            slug,
+          },
+        },
+        sort: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+        locale,
+      });
+
+      return { data: faqs };
+    } catch (error) {
+      ctx.throw(500, error as any);
+    }
+  },
 }));
 
 
