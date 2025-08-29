@@ -67,6 +67,8 @@ export default factories.createCoreController(
             "title",
             "slug",
             "content",
+            "articleSection",
+            "keywords",
             "seo_title",
             "seo_description",
             "publishedAt",
@@ -81,7 +83,10 @@ export default factories.createCoreController(
                 featured_image: { fields: ["url"] },
               },
             },
-            blogs: { fields: ["title", "slug"] }
+            blogs: { fields: ["title", "slug"] },
+            faqs:{
+              fields: ["Question", "TextAnswer","BlockAnswer"]
+            }
           },
           locale:locale
         });
