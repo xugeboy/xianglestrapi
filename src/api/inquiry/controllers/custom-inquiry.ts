@@ -264,11 +264,10 @@ ${attachments.length > 0 ? `${attachments.length} file(s) attached.` : "No files
         strapi.log.error("Critical error in submitInquiry controller:", error);
         // 尝试在严重错误时清理所有上传的文件 (逻辑不变)
         const files = ctx.request.files;
-        if (files && files.attachmentFiles) {
-          // 使用你的文件字段名
-          const cleanupCandidates = Array.isArray(files.attachmentFiles)
-            ? files.attachmentFiles
-            : [files.attachmentFiles];
+        if (files && files.attachment) {
+          const cleanupCandidates = Array.isArray(files.attachment)
+            ? files.attachment
+            : [files.attachment];
           cleanupCandidates.forEach((file) => {
             if (file && file.filepath && fs.existsSync(file.filepath)) {
               fs.unlink(file.filepath, (err) => {
