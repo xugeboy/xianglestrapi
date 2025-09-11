@@ -1,9 +1,6 @@
 /**
  * Custom inquiry controller for advanced queries
  */
-const fs = require("fs"); // Node.js 文件系统模块
-const path = require("path"); // Node.js 路径模块
-
 import { factories } from "@strapi/strapi";
 
 /**
@@ -79,7 +76,6 @@ export default factories.createCoreController(
           position,
           message,
         };
-        const files = ctx.request.files;
 
         // (可选) 添加后端验证，例如检查必需字段
         if (!name || !email || !message) {
@@ -123,75 +119,44 @@ export default factories.createCoreController(
           );
         }
 
-        // 2. 准备邮件附件 (最多3个文件 - 逻辑不变)
-        const attachments = [];
-        const processedTempFilePaths = [];
-        const uploadedFilesInput = files?.attachment; // 确保使用你前端设置的文件字段名
-        const filesToProcess = Array.isArray(uploadedFilesInput)
-          ? uploadedFilesInput
-          : uploadedFilesInput
-            ? [uploadedFilesInput]
-            : [];
-
-        if (filesToProcess.length > 3) {
-          filesToProcess.forEach((file) => {
-            if (file && file.filepath && fs.existsSync(file.filepath)) {
-              fs.unlink(file.filepath, (err) => {
-                if (err)
-                  strapi.log.warn(
-                    `Cleanup failed for ${file.filepath} during limit check rejection.`
-                  );
-              });
-            }
-          });
-          return ctx.badRequest("You can upload a maximum of 3 files.");
-        }
-
-        strapi.log.info(
-          `Processing ${filesToProcess.length} potential attachments.`
-        );
-        for (const uploadedFile of filesToProcess) {
-          if (
-            uploadedFile &&
-            uploadedFile.filepath &&
-            uploadedFile.originalFilename &&
-            uploadedFile.mimetype
-          ) {
-            strapi.log.info(
-              `Processing attachment: ${uploadedFile.originalFilename}`
-            );
-            try {
-              const fileContent = fs.readFileSync(uploadedFile.filepath);
-              attachments.push({
-                filename: uploadedFile.originalFilename,
-                content: fileContent,
-                contentType: uploadedFile.mimetype,
-              });
-              processedTempFilePaths.push(uploadedFile.filepath);
-              strapi.log.info(
-                `Attachment ${uploadedFile.originalFilename} prepared.`
-              );
-            } catch (readError) {
-              strapi.log.error(
-                `Error reading uploaded file ${uploadedFile.originalFilename} from path ${uploadedFile.filepath}:`,
-                readError
-              );
-              strapi.log.warn(
-                `Skipping attachment ${uploadedFile.originalFilename} due to read error.`
-              );
-            }
-          } else {
-            strapi.log.warn(
-              "Skipping an invalid or incomplete file data object."
-            );
-          }
-        }
-        // 3. 保存询盘数据
+        // 2. 保存询盘数据
         await strapi.entityService.create("api::inquiry.inquiry", {
           data: inquiryData,
         });
-        // 4. 构造包含所有字段的邮件选项
-        const emailOptions = {
+
+        // 3. 发送自动回复邮件给客户
+        const customerEmailOptions = {
+          to: email,
+          from: "info@xiangleratchetstrap.com",
+          subject: "Thank you for your inquiry – Xiangle Ratchet Straps",
+          text: `Dear ${name},
+
+Thank you for reaching out to us. We have received your inquiry and our sales team will respond to you within 8 hours.
+
+If you would like to share drawings, specifications, or other documents related to your request, please feel free to reply to this email and attach your files directly.
+
+We look forward to learning more about your needs and working together.
+
+Best regards,
+Dustin
+Vice Sales Director
+Xiangle Ratchet Straps`,
+          html: `
+            <html><body>
+            <p>Dear ${name},</p>
+            <p>Thank you for reaching out to us. We have received your inquiry and our sales team will respond to you within 8 hours.</p>
+            <p>If you would like to share drawings, specifications, or other documents related to your request, please feel free to reply to this email and attach your files directly.</p>
+            <p>We look forward to learning more about your needs and working together.</p>
+            <p>Best regards,<br>
+            Dustin<br>
+            Vice Sales Director<br>
+            Xiangle Ratchet Straps</p>
+            </body></html>
+          `,
+        };
+
+        // 4. 构造包含所有字段的内部通知邮件
+        const internalEmailOptions = {
           to: "info@xianglecargocontrol.com", // 修改为你的接收邮箱
           from: "info@xiangleratchetstrap.com",
           replyTo: email,
@@ -208,7 +173,6 @@ Position: ${position || "N/A"}
 Message:
 ${messageText || "N/A"}
 --------------------------------
-${attachments.length > 0 ? `${attachments.length} file(s) attached.` : "No files attached."}
               `,
           html: `
                 <html><body>
@@ -221,64 +185,29 @@ ${attachments.length > 0 ? `${attachments.length} file(s) attached.` : "No files
                 <hr>
                 <h2>Message:</h2>
                 <div>${messageHtml || "<p>N/A</p>"}</div>
-                <hr>
-                <p><strong>${attachments.length > 0 ? `${attachments.length} file(s) attached.` : "No files attached."}</strong></p>
                 </body></html>
               `,
-          attachments: attachments,
         };
 
-        // 5. 发送邮件并进行清理 (try...finally 结构保持不变)
+        // 5. 发送邮件
         try {
-          strapi.log.info(
-            `Sending email with ${attachments.length} attachments to ${emailOptions.to}...`
-          );
-          await strapi.plugin("email").service("email").send(emailOptions);
-          strapi.log.info("Email sent successfully.");
+          // 发送自动回复邮件给客户
+          strapi.log.info(`Sending auto-reply email to customer: ${email}...`);
+          await strapi.plugin("email").service("email").send(customerEmailOptions);
+          strapi.log.info("Customer auto-reply email sent successfully.");
+
+          // 发送内部通知邮件
+          strapi.log.info(`Sending internal notification email to ${internalEmailOptions.to}...`);
+          await strapi.plugin("email").service("email").send(internalEmailOptions);
+          strapi.log.info("Internal notification email sent successfully.");
+
           return ctx.send({ message: "Inquiry submitted successfully!" });
         } catch (emailError) {
-          strapi.log.error("Failed to send inquiry email:", emailError);
-          return ctx.internalServerError("Failed to send inquiry email.");
-        } finally {
-          strapi.log.info(
-            `Cleaning up ${processedTempFilePaths.length} processed temporary files...`
-          );
-          processedTempFilePaths.forEach((filePath) => {
-            if (fs.existsSync(filePath)) {
-              fs.unlink(filePath, (unlinkErr) => {
-                if (unlinkErr)
-                  strapi.log.warn(
-                    `Could not delete temp file ${filePath}:`,
-                    unlinkErr
-                  );
-                else strapi.log.info(`Temporary file ${filePath} deleted.`);
-              });
-            } else {
-              strapi.log.warn(
-                `Attempted cleanup for non-existent temp file: ${filePath}`
-              );
-            }
-          });
+          strapi.log.error("Failed to send inquiry emails:", emailError);
+          return ctx.internalServerError("Failed to send inquiry emails.");
         }
       } catch (error) {
         strapi.log.error("Critical error in submitInquiry controller:", error);
-        // 尝试在严重错误时清理所有上传的文件 (逻辑不变)
-        const files = ctx.request.files;
-        if (files && files.attachment) {
-          const cleanupCandidates = Array.isArray(files.attachment)
-            ? files.attachment
-            : [files.attachment];
-          cleanupCandidates.forEach((file) => {
-            if (file && file.filepath && fs.existsSync(file.filepath)) {
-              fs.unlink(file.filepath, (err) => {
-                if (err)
-                  strapi.log.warn(
-                    `Cleanup failed for ${file.filepath} during critical error handling.`
-                  );
-              });
-            }
-          });
-        }
         return ctx.internalServerError("An unexpected error occurred.");
       }
     },
