@@ -146,7 +146,7 @@ export default factories.createCoreController(
         const products = await strapi.entityService.findMany(
           "api::product.product",
           {
-            fields: ["id", "name", "slug", "about", "code", "customizable"],
+            fields: ["id", "name", "slug", "about", "code", "customizable", "assembly_break_strength", "working_load_limit", "webbing_break_strength"],
             filters,
             populate: {
               featured_image: { fields: ["url"] },
