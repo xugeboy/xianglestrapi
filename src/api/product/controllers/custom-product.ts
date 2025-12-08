@@ -35,12 +35,11 @@ export default factories.createCoreController(
         };
 
         // 定义要分组的属性字段
-        const attributeFields = [
-          "width",
-          "grade",
-          "assembly_break_strength",
-          "end_fitting",
-        ];
+        const attributeFields =
+          locale === "en"
+            ? ["width", "grade", "assembly_break_strength", "end_fitting"]
+            : ["width", "grade", "working_load_limit", "end_fitting"];
+
         // 定义需要特殊数值排序的字段
         const numericSortFields = [
           "working_load_limit",
@@ -146,7 +145,17 @@ export default factories.createCoreController(
         const products = await strapi.entityService.findMany(
           "api::product.product",
           {
-            fields: ["id", "name", "slug", "about", "code", "customizable", "assembly_break_strength", "working_load_limit", "webbing_break_strength"],
+            fields: [
+              "id",
+              "name",
+              "slug",
+              "about",
+              "code",
+              "customizable",
+              "assembly_break_strength",
+              "working_load_limit",
+              "webbing_break_strength",
+            ],
             filters,
             populate: {
               featured_image: { fields: ["url"] },
@@ -278,7 +287,9 @@ export default factories.createCoreController(
         }
 
         // @ts-ignore
-        if (mainProduct.localizations && Array.isArray(mainProduct.localizations)
+        if (
+          mainProduct.localizations &&
+          Array.isArray(mainProduct.localizations)
         ) {
           // @ts-ignore
           mainProduct.localizations.forEach((localization) => {
