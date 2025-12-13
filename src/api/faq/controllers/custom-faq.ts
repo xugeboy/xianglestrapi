@@ -49,7 +49,9 @@ export default factories.createCoreController("api::faq.faq", ({ strapi }) => ({
         filters: {
           isGobal: false,
           product: {
-            slug,
+            slug: {
+              $eq: slug,
+            },
           },
         },
         sort: [{ sortOrder: "asc" }, { createdAt: "asc" }],
@@ -81,7 +83,9 @@ export default factories.createCoreController("api::faq.faq", ({ strapi }) => ({
         filters: {
           isGobal: false,
           blog: {
-            slug,
+            slug: {
+              $eq: slug,
+            },
           },
         },
         sort: [{ sortOrder: "asc" }, { createdAt: "asc" }],
