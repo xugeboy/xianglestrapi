@@ -102,6 +102,7 @@ export default factories.createCoreController(
               "name",
               "seo_title",
               "seo_description",
+              "description",
               "publishedAt",
               "updatedAt",
             ],
