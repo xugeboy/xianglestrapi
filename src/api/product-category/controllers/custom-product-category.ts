@@ -67,10 +67,30 @@ export default factories.createCoreController(
             fields: ["id", "name", "slug", "description"],
             populate: {
               featured_image: { fields: ["url"] },
+              applications: {
+                populate: {
+                  image: { fields: ["url"] },
+                },
+              },
+              category_faqs: {
+                fields: ["question", "answer"],
+              },
+              category_hero: {
+                fields: ["title", "subtitle", "description"],
+                populate: {
+                  image: { fields: ["url"] },
+                },
+              },
             },
             locale: locale
           }
         );
+
+        if (!category || category.length === 0) {
+          return ctx.notFound("Category not found");
+        }
+
+        return { data: category[0] };
       } catch (error) {
         ctx.throw(500, error);
       }
