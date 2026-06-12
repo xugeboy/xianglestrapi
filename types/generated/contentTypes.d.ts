@@ -557,6 +557,9 @@ export interface ApiProductCategoryProductCategory
     };
   };
   attributes: {
+    applications: Schema.Attribute.Component<'category.application-card', true>;
+    category_faqs: Schema.Attribute.Component<'category.faq-item', true>;
+    category_hero: Schema.Attribute.Component<'category.category-hero', false>;
     children: Schema.Attribute.Relation<
       'oneToMany',
       'api::product-category.product-category'

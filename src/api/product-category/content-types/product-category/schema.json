@@ -93,6 +93,21 @@
           "localized": true
         }
       }
+    },
+    "category_faqs": {
+      "type": "component",
+      "repeatable": true,
+      "component": "category.faq-item"
+    },
+    "applications": {
+      "type": "component",
+      "repeatable": true,
+      "component": "category.application-card"
+    },
+    "category_hero": {
+      "type": "component",
+      "repeatable": false,
+      "component": "category.category-hero"
     }
   }
 }

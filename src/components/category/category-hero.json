@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_category_category_heroes",
+  "info": {
+    "displayName": "category-hero"
+  },
+  "options": {},
+  "attributes": {
+    "image": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    },
+    "title": {
+      "type": "string"
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    }
+  }
+}
