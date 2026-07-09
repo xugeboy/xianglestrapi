@@ -31,6 +31,7 @@ export default factories.createCoreController(
               children: { fields: ["id", "name", "slug"] },
               parent: { fields: ["id", "name", "slug"] },
             },
+            sort: { sort: "asc" },
             locale: locale
           }
         );
