@@ -155,6 +155,7 @@ export default factories.createCoreController(
               "assembly_break_strength",
               "working_load_limit",
               "webbing_break_strength",
+              "online_builder_template_url",
             ],
             filters,
             populate: {
@@ -242,6 +243,7 @@ export default factories.createCoreController(
               "updatedAt",
               "customizable",
               "strap_colors",
+              "online_builder_template_url",
             ],
             populate: {
               featured_image: { fields: ["url"] },
@@ -268,6 +270,7 @@ export default factories.createCoreController(
               localizations: {
                 fields: ["slug", "locale"],
               },
+              tqc_test_image: { fields: ["url"] },
             },
             locale: locale,
           }
