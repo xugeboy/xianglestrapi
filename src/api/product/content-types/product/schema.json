@@ -274,6 +274,19 @@
       "relation": "oneToMany",
       "target": "api::faq.faq",
       "mappedBy": "product"
+    },
+    "tqc_test_image": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    },
+    "online_builder_template_url": {
+      "type": "string"
     }
   }
 }

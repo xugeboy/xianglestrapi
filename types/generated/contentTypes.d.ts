@@ -752,6 +752,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    online_builder_template_url: Schema.Attribute.String;
     product_weight: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
@@ -791,6 +792,9 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       }>;
     slug: Schema.Attribute.UID<'name'>;
     strap_colors: Schema.Attribute.JSON;
+    tqc_test_image: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
